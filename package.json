@@ -1,0 +1,26 @@
+{
+  "name": "hivemind",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "smoke": "tsx scripts/smoke-test.ts",
+    "smoke:local": "tsx scripts/smoke-test-local-llm.ts",
+    "task": "tsx src/cli.ts",
+    "hub": "tsx server/index.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.32.0",
+    "dotenv": "^16.4.5",
+    "express": "^5.2.1",
+    "openai": "^4.68.0",
+    "playwright": "^1.48.0",
+    "steel-sdk": "^0.10.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^22.7.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0"
+  }
+}
