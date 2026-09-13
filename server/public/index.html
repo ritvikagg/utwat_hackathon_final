@@ -546,9 +546,30 @@ async function loadPresence() {
     .join('');
 }
 
+let playbooksSnapshot = null;
+
 async function loadPlaybooks() {
+  const groupId = me?.currentGroupId;
   const playbooks = await api('/api/playbooks');
+  if (!me || me.currentGroupId !== groupId) return;
   const el = $('#playbooks');
+  const snapshot = JSON.stringify([groupId, playbooks]);
+  // Poll normally, but keep the live DOM when nothing has changed.
+  if (snapshot === playbooksSnapshot) return;
+
+  // Capture after the request so interactions during loading are preserved.
+  const scriptViews = new Map(
+    Array.from(el.querySelectorAll('details[data-playbook-key]'), (details) => {
+      const pre = details.querySelector('pre');
+      return [details.dataset.playbookKey, {
+        open: details.open,
+        scrollTop: pre.scrollTop,
+        scrollLeft: pre.scrollLeft,
+      }];
+    })
+  );
+  const tableScrollLeft = el.querySelector('.table-scroll')?.scrollLeft || 0;
+  playbooksSnapshot = snapshot;
   if (playbooks.length === 0) {
     el.innerHTML = '<div class="empty">No playbooks yet — run a task below to start teaching the library.</div>';
     return;
@@ -568,7 +589,7 @@ async function loadPlaybooks() {
               <td>${p.successCount}</td>
               <td>${
                 p.script
-                  ? `<details><summary>${p.script.length} steps</summary><pre>${esc(JSON.stringify(p.script, null, 2))}</pre></details>`
+                  ? `<details data-playbook-key="${encodeURIComponent(JSON.stringify([groupId, p.domain, p.taskSignature]))}"><summary>${p.script.length} steps</summary><pre>${esc(JSON.stringify(p.script, null, 2))}</pre></details>`
                   : '<span class="muted">—</span>'
               }</td>
               <td class="tips-cell">
@@ -582,6 +603,16 @@ async function loadPlaybooks() {
     </table>
     </div>
   `;
+  el.querySelectorAll('details[data-playbook-key]').forEach((details) => {
+    const view = scriptViews.get(details.dataset.playbookKey);
+    if (!view) return;
+    details.open = view.open;
+    const pre = details.querySelector('pre');
+    pre.scrollTop = view.scrollTop;
+    pre.scrollLeft = view.scrollLeft;
+  });
+  el.querySelector('.table-scroll').scrollLeft = tableScrollLeft;
+
   el.querySelectorAll('button[data-idx]').forEach((btn) => {
     btn.addEventListener('click', async () => {
       const idx = btn.dataset.idx;
