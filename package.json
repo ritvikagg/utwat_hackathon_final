@@ -7,6 +7,7 @@
     "smoke": "tsx scripts/smoke-test.ts",
     "smoke:local": "tsx scripts/smoke-test-local-llm.ts",
     "task": "tsx src/cli.ts",
+    "test:chat": "node --import tsx scripts/test-chat.ts",
     "hub": "tsx server/index.ts"
   },
   "dependencies": {

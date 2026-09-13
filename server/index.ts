@@ -16,6 +16,7 @@ import {
 import { createGroup, joinGroup, listGroups, getGroup } from '../src/library/groups.js';
 import { createSession, getUserIdForToken, deleteSession } from '../src/library/sessions.js';
 import { heartbeat, markTaskRunning, getPresence } from '../src/library/presence.js';
+import { appendMessage, recentMessages, MAX_MESSAGE_LENGTH } from '../src/library/chat.js';
 import { runTask } from '../src/runTask.js';
 import type { RunLogEntry, User } from '../src/types.js';
 
@@ -164,6 +165,35 @@ app.post('/api/groups/:id/join', requireAuth, (req, res) => {
   } catch (err) {
     res.status(404).json({ error: (err as Error).message });
   }
+});
+
+// --- Group chat ---
+
+function requireChatMembership(req: Request, res: Response, next: NextFunction): void {
+  const group = getGroup(String(req.params.id));
+  if (!group || !group.memberUserIds.includes(req.user!.id)) {
+    res.status(403).json({ error: 'Join this group to use its chat.' });
+    return;
+  }
+  next();
+}
+
+app.get('/api/groups/:id/messages', requireAuth, requireChatMembership, (req, res) => {
+  res.json(recentMessages(String(req.params.id)));
+});
+
+app.post('/api/groups/:id/messages', requireAuth, requireChatMembership, (req, res) => {
+  const text: unknown = req.body?.text;
+  if (typeof text !== 'string' || !text.trim() || text.length > MAX_MESSAGE_LENGTH) {
+    res.status(400).json({
+      error: typeof text === 'string' && text.length > MAX_MESSAGE_LENGTH
+        ? `Messages must be ${MAX_MESSAGE_LENGTH} characters or fewer.`
+        : 'Enter a message.',
+    });
+    return;
+  }
+  // Sender identity comes from the authenticated session, never the body.
+  res.status(201).json(appendMessage(String(req.params.id), req.user!, text));
 });
 
 // --- Presence (who's online / has a task running, within your group) ---

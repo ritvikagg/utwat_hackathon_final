@@ -46,7 +46,8 @@ A few things looked simple and weren't — worth knowing because they're the act
 - **Accounts** — email + password, hashed with Node's built-in `scrypt` (salted, timing-safe comparison), never stored or logged in plain text.
 - **Groups** — playbooks and activity are scoped per group, not global. Join an existing group or create one from a searchable list; switch anytime from the account menu. Two groups' data is fully isolated — verified by testing two independent accounts in separate groups.
 - **Live dashboard** — the shared library (with expandable compiled scripts and editable human tips), a live activity feed across every teammate's runs, and a "run a task" form that works without touching a terminal.
-- **Presence** — a green dot next to each teammate's name when they're active, and a spinning indicator when they currently have a task running — whether triggered from the dashboard or from someone's own terminal via the CLI.
+- **Presence** — teammate names with online/task status available on hover.
+- **Group chat** — a simple team conversation alongside the library and activity. Members see the latest 100 messages, with automatic updates every four seconds, sender names, timestamps, and a message composer (Enter to send; Shift+Enter for a new line). Each group's complete history is saved in `data/chat/<group-id>.json` on the hub and survives restarts. Chat requests require authentication and group membership; messages use the authenticated sender's identity. Messages are plain text with a 2,000-character limit. Switching groups preserves separate unsent drafts and does not mix conversations.
 - **CLI and dashboard share one identity model** — log into the dashboard, copy your API token from the account menu, drop it in `.env`, and the CLI authenticates as you, writing into the same group.
 
 ## Architecture
