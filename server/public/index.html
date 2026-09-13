@@ -4,6 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>hivemind — Shared agent workspace</title>
+<link rel="icon" type="image/png" href="/assets/hivemind-logo.png" />
 <style>
   :root {
     color-scheme: light;
@@ -43,6 +44,9 @@
   }
   header h1, .card .brand { margin: 0; font-size: 23px; font-weight: 750; letter-spacing: -1px; }
   header h1 span, .card .brand span { color: var(--accent); }
+  header h1, .card .brand { display: flex; align-items: center; gap: 10px; }
+  .brand-logo { display: block; width: 42px; height: 42px; object-fit: contain; border-radius: 9px; background: #191919; flex-shrink: 0; }
+  .card .brand-logo { width: 52px; height: 52px; }
   #agentStrip { display: flex; gap: 8px; flex-wrap: wrap; flex: 1; min-width: 0; }
   .agent-chip {
     background: #f8f8f5;
@@ -140,6 +144,20 @@
   .group-row .count { display: block; color: var(--muted); font-size: 12px; margin-top: 2px; }
   .group-row button { padding: 7px 14px; font-size: 12px; flex-shrink: 0; }
   .create-group-row { display: flex; gap: 8px; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border); }
+  .chat-messages { height: 300px; overflow-y: auto; overscroll-behavior: contain; padding: 16px; border: 1px solid var(--border); border-radius: 9px; background: #fcfcfa; }
+  .chat-messages .empty { border: 0; background: none; padding-top: 80px; }
+  .chat-message { width: fit-content; max-width: 85%; margin: 0 0 14px; padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px; background: white; }
+  .chat-message.own { margin-left: auto; background: var(--accent-soft); border-color: #f0df92; }
+  .chat-meta { display: flex; align-items: baseline; flex-wrap: wrap; gap: 10px; margin-bottom: 4px; font-size: 11px; }
+  .chat-meta b { font-weight: 650; overflow-wrap: anywhere; }
+  .chat-meta time { color: var(--muted); font-size: 10px; }
+  .chat-message p { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 13px; }
+  .chat-form { display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 12px; margin-top: 16px; }
+  .chat-form textarea { display: block; resize: vertical; min-height: 68px; max-height: 180px; }
+  .chat-form button { min-height: 43px; }
+  .chat-hint { margin: 8px 0 0; font-size: 11px; color: var(--muted); }
+  #chatConnection:empty { display: none; }
+  #chatConnection { margin: 10px 0 0; }
   @media (max-width: 800px) {
     header { gap: 14px; }
     #agentStrip { order: 3; flex-basis: 100%; }
@@ -157,6 +175,9 @@
     #runBtn { justify-self: stretch; }
     .intro p:last-child { font-size: 13px; }
     .card { padding: 28px 24px; }
+    .chat-messages { padding: 12px; }
+    .chat-message { max-width: 95%; }
+    .chat-form { grid-template-columns: 1fr; }
   }
   @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation-duration: 2s !important; } }
 </style>
@@ -166,7 +187,7 @@
 <!-- Auth: login / sign up -->
 <div id="authScreen" class="overlay" hidden>
   <div class="card">
-    <div class="brand">hive<span>mind</span></div>
+    <div class="brand"><img class="brand-logo" src="/assets/hivemind-logo.png" alt="" width="52" height="52" /><div>hive<span>mind</span></div></div>
     <p class="eyebrow">Your shared agent workspace</p>
     <h1>Learn once.<br>Run together.</h1>
     <p class="sub" id="authSub">Log in to see your team's shared agent library.</p>
@@ -212,7 +233,7 @@
 <!-- Main app -->
 <div id="appScreen" hidden>
 <header>
-  <h1>hive<span>mind</span></h1>
+  <h1><img class="brand-logo" src="/assets/hivemind-logo.png" alt="" width="42" height="42" /><span style="color:var(--text)">hive<span>mind</span></span></h1>
   <div id="agentStrip"></div>
   <div id="userBox">
     <span class="group-pill" id="groupPill"></span>
@@ -276,6 +297,24 @@
     </div>
     <div id="runs"></div>
   </section>
+
+  <section aria-labelledby="chatHeading">
+    <div class="section-heading">
+      <h2 id="chatHeading">Group chat</h2>
+      <p>Talk with your team in <span id="chatGroupName">your group</span>.</p>
+    </div>
+    <div class="chat-messages" id="chatMessages" role="log" aria-label="Group messages" aria-live="polite" aria-relevant="additions" tabindex="0"></div>
+    <p class="muted" id="chatConnection" role="status"></p>
+    <form class="chat-form" id="chatForm">
+      <div class="field">
+        <label for="chatInput">Message your group</label>
+        <textarea id="chatInput" placeholder="Share an update or ask your team a question…" maxlength="2000" rows="2" required></textarea>
+      </div>
+      <button type="submit" id="chatSendBtn">Send</button>
+    </form>
+    <p class="chat-hint">Enter to send · Shift+Enter for a new line · Latest 100 messages</p>
+    <div class="error" id="chatError" role="alert"></div>
+  </section>
 </main>
 </div>
 
@@ -321,6 +360,8 @@ function setToken(t, user) {
 function signOut() {
   token = null;
   me = null;
+  syncChatGroup();
+  chatDrafts.clear();
   try { localStorage.removeItem('hivemind_token'); } catch {}
   showScreen('auth');
 }
@@ -527,7 +568,139 @@ async function afterAuth() {
 function renderUserBox() {
   $('#userName').textContent = me.displayName || me.email;
   $('#groupPill').textContent = me.currentGroupName || '';
+  syncChatGroup();
 }
+
+// ---------- Group chat ----------
+let chatScope = null;
+let chatSnapshot = null;
+let chatLoadSequence = 0;
+const chatDrafts = new Map();
+const chatSending = new Set();
+
+function currentChatScope() {
+  return token && me?.currentGroupId
+    ? JSON.stringify([me.id, me.currentGroupId, token])
+    : null;
+}
+
+function syncChatGroup() {
+  const scope = currentChatScope();
+  $('#chatGroupName').textContent = me?.currentGroupName || 'your group';
+  if (scope === chatScope) return;
+  if (chatScope) chatDrafts.set(chatScope, $('#chatInput').value);
+  chatScope = scope;
+  chatSnapshot = null;
+  chatLoadSequence++;
+  $('#chatMessages').innerHTML = scope ? '<div class="empty">Loading messages…</div>' : '';
+  $('#chatInput').value = chatDrafts.get(scope) || '';
+  $('#chatError').textContent = '';
+  $('#chatConnection').textContent = '';
+  $('#chatSendBtn').disabled = !scope || chatSending.has(scope);
+  $('#chatSendBtn').textContent = chatSending.has(scope) ? 'Sending…' : 'Send';
+}
+
+async function loadChat() {
+  const scope = currentChatScope();
+  if (!scope) return;
+  syncChatGroup();
+  const groupId = me.currentGroupId;
+  const sequence = ++chatLoadSequence;
+  try {
+    const messages = await api('/api/groups/' + encodeURIComponent(groupId) + '/messages');
+    if (scope !== currentChatScope() || sequence !== chatLoadSequence) return;
+    $('#chatConnection').textContent = '';
+    const snapshot = JSON.stringify(messages);
+    if (snapshot === chatSnapshot) return;
+    const list = $('#chatMessages');
+    const followLatest = chatSnapshot === null || list.scrollHeight - list.clientHeight - list.scrollTop < 48;
+    const scrollTop = list.scrollTop;
+    const fragment = document.createDocumentFragment();
+    if (!messages.length) {
+      const empty = document.createElement('div');
+      empty.className = 'empty';
+      empty.textContent = 'No messages yet. Start the conversation.';
+      fragment.append(empty);
+    }
+    for (const message of messages) {
+      const own = message.authorId === me.id;
+      const item = document.createElement('div');
+      item.className = 'chat-message' + (own ? ' own' : '');
+      const meta = document.createElement('div');
+      meta.className = 'chat-meta';
+      const author = document.createElement('b');
+      author.textContent = message.authorName + (own ? ' (you)' : '');
+      const time = document.createElement('time');
+      const date = new Date(message.createdAt);
+      time.dateTime = message.createdAt;
+      time.title = date.toLocaleString();
+      time.textContent = date.toLocaleDateString([], { month: 'short', day: 'numeric' }) + ' · '
+        + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      meta.append(author, time);
+      const text = document.createElement('p');
+      // Messages and names are plain text; never interpret them as HTML.
+      text.textContent = message.text;
+      item.append(meta, text);
+      fragment.append(item);
+    }
+    list.replaceChildren(fragment);
+    list.scrollTop = followLatest ? list.scrollHeight : scrollTop;
+    chatSnapshot = snapshot;
+  } catch (err) {
+    if (scope !== currentChatScope() || sequence !== chatLoadSequence) return;
+    $('#chatConnection').textContent = 'Chat unavailable. Retrying automatically…';
+    if (chatSnapshot === null) {
+      $('#chatMessages').innerHTML = '<div class="empty">Messages will appear when the connection returns.</div>';
+    }
+  }
+}
+
+$('#chatInput').addEventListener('input', () => {
+  const scope = currentChatScope();
+  if (scope) chatDrafts.set(scope, $('#chatInput').value);
+});
+
+$('#chatInput').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) {
+    e.preventDefault();
+    $('#chatForm').requestSubmit();
+  }
+});
+
+$('#chatForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const scope = currentChatScope();
+  const input = $('#chatInput');
+  const draft = input.value;
+  const text = draft.trim();
+  if (!scope || !text || chatSending.has(scope)) return;
+  const groupId = me.currentGroupId;
+  chatDrafts.set(scope, draft);
+  chatSending.add(scope);
+  $('#chatSendBtn').disabled = true;
+  $('#chatSendBtn').textContent = 'Sending…';
+  $('#chatError').textContent = '';
+  try {
+    await api('/api/groups/' + encodeURIComponent(groupId) + '/messages', {
+      method: 'POST',
+      body: JSON.stringify({ text }),
+    });
+    if (chatDrafts.get(scope) === draft) chatDrafts.delete(scope);
+    if (scope === currentChatScope()) {
+      if (input.value === draft) input.value = '';
+      $('#chatMessages').scrollTop = $('#chatMessages').scrollHeight;
+      await loadChat();
+    }
+  } catch (err) {
+    if (scope === currentChatScope()) $('#chatError').textContent = 'Could not send: ' + err.message;
+  } finally {
+    chatSending.delete(scope);
+    if (scope === currentChatScope()) {
+      $('#chatSendBtn').disabled = false;
+      $('#chatSendBtn').textContent = 'Send';
+    }
+  }
+});
 
 // ---------- Main dashboard (same as before, group-scoped server-side) ----------
 function sendHeartbeat() {
@@ -673,7 +846,7 @@ async function loadRuns() {
 
 async function refreshAll() {
   sendHeartbeat();
-  await Promise.all([loadPresence(), loadPlaybooks(), loadRuns()]);
+  await Promise.all([loadPresence(), loadPlaybooks(), loadRuns(), loadChat()]);
 }
 
 $('#runForm').addEventListener('submit', async (e) => {

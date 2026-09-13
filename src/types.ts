@@ -57,3 +57,12 @@ export interface Group {
   createdAt: string;
   memberUserIds: string[];
 }
+
+export interface ChatMessage {
+  id: string;
+  groupId: string;
+  authorId: string;
+  authorName: string;
+  text: string;
+  createdAt: string;
+}
