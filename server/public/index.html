@@ -8,12 +8,20 @@
 <style>
 :root{color-scheme:dark;--bg:#191a18;--panel:#20211e;--field:#171815;--line:#363831;--text:#edeee7;--muted:#a2a69a;--accent:#c3e879;--green:#91c99b;--amber:#dabb7c;--red:#e49c91;--mono:ui-monospace,SFMono-Regular,Consolas,monospace}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}button,input,textarea,select{font:inherit}button,a,input,textarea,select,summary{-webkit-tap-highlight-color:transparent}button{cursor:pointer}button:disabled{opacity:.55;cursor:wait}a{color:var(--accent);text-underline-offset:3px}button:focus-visible,a:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:4px}input:focus,textarea:focus,select:focus{outline:2px solid var(--accent);outline-offset:2px}button{border:1px solid var(--line);border-radius:5px;padding:8px 13px;background:transparent;color:var(--text);transition:background .15s,border-color .15s}button:hover:not(:disabled){background:#30332a;border-color:#666c58}.primary{background:var(--accent);color:#202716;border-color:var(--accent);font-weight:650}.primary:hover:not(:disabled){background:#d2f49a;border-color:#d2f49a}input,textarea,select{width:100%;min-width:0;border:1px solid var(--line);border-radius:5px;background:var(--field);padding:10px 12px;color:var(--text)}input::placeholder,textarea::placeholder{color:#777d6f}textarea{resize:vertical}h1,h2,p{margin:0}h1{font-size:30px;line-height:1.2;font-weight:600;letter-spacing:-1px}h2{font-size:16px;font-weight:600;letter-spacing:-.3px}.muted{color:var(--muted)}.mono,.eyebrow,time{font-family:var(--mono);font-variant-numeric:tabular-nums}.eyebrow{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted)}.glyph{width:25px;height:25px;color:var(--accent);flex-shrink:0}.topbar{border-bottom:1px solid var(--line);padding:15px 32px;display:flex;align-items:center;justify-content:space-between;gap:20px}.brand{display:flex;align-items:center;gap:10px;font-size:21px;font-weight:650;letter-spacing:-.7px;text-decoration:none;color:var(--text)}.brand-sub{border-left:1px solid var(--line);padding-left:20px;letter-spacing:0;margin-left:10px;font-size:12px;font-weight:400;color:var(--muted)}.identity{display:flex;align-items:center;gap:10px}.identity label{font-size:12px;color:var(--muted)}.identity input{width:140px;padding:6px 9px;font-size:12px}main{max-width:1320px;margin:auto;padding:36px 32px 50px}.intro{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:26px}.intro p{color:var(--muted);margin-top:10px}.connection{display:flex;align-items:center;gap:7px;font:11px var(--mono);color:var(--muted);white-space:nowrap}.dot{width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block}.connection.error .dot{background:var(--red)}.connection.error{color:var(--red)}.memory-strip{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:16px 0;display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:28px}.pipeline{display:flex;align-items:center;gap:14px;color:var(--muted);font:11px var(--mono)}.pipeline .arrow{color:#646a59}.pipeline .last{color:var(--accent)}.counts{display:flex;gap:26px}.count{display:flex;align-items:baseline;gap:7px}.count b{font:19px var(--mono);color:var(--text)}.count span{color:var(--muted);font-size:12px}.workspace{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:36px}.left,.activity{min-width:0}.command{background:var(--panel);border:1px solid var(--line);border-radius:7px;padding:22px;margin-bottom:32px}.section-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}.command .section-heading{margin-bottom:20px}.run-form{display:grid;gap:15px}.run-form label{display:grid;gap:7px;font-size:12px;color:var(--muted)}#runUrl{font-family:var(--mono);font-size:12px}#runTaskText{min-height:78px;font-size:14px}.form-bottom{display:flex;align-items:center;justify-content:space-between;gap:16px}.form-bottom p{font-size:12px;color:var(--muted)}#runBtn{white-space:nowrap;padding:9px 18px}#runStatus:empty{display:none}#runStatus{margin-top:18px;padding-top:16px;border-top:1px solid var(--line);font-size:12px;overflow-wrap:anywhere}.result-title{display:flex;align-items:center;gap:8px;margin-bottom:8px}.result-title strong{font:11px var(--mono);letter-spacing:.8px}.result-success .result-title{color:var(--accent)}.result-error{color:var(--red)}.result-meta{display:flex;gap:14px;flex-wrap:wrap;margin-top:9px;color:var(--muted);font:11px var(--mono)}.running-dot{background:var(--accent);animation:pulse 1.2s ease-in-out infinite}.library-header{margin-bottom:16px}.library-header p{font-size:12px;color:var(--muted);margin-top:4px}.filters{display:flex;gap:10px;margin-bottom:15px}.filters input{flex:1;font-size:12px}.filters select{width:120px;font-size:12px}.index-labels{display:grid;grid-template-columns:1fr 80px 70px;gap:12px;padding:0 12px 10px;border-bottom:1px solid var(--line)}.index-labels span:nth-child(n+2){text-align:right}.playbook{border-bottom:1px solid var(--line)}.playbook>summary{list-style:none;display:grid;grid-template-columns:minmax(0,1fr) 80px 70px;align-items:center;gap:12px;padding:16px 12px;cursor:pointer}.playbook>summary::-webkit-details-marker{display:none}.playbook>summary:hover{background:var(--panel)}.task-title{display:flex;gap:9px;align-items:baseline;font-weight:500;overflow-wrap:anywhere}.chevron{font:14px var(--mono);color:var(--muted);display:inline-block;transition:transform .15s}.playbook[open] .chevron{transform:rotate(90deg)}.domain{font:11px var(--mono);color:var(--muted);margin:4px 0 0 19px}.badge{font:10px var(--mono);text-transform:uppercase;white-space:nowrap}.verified{color:var(--green)}.draft{color:var(--amber)}.right{text-align:right}.success-count{font:12px var(--mono);color:var(--muted)}.playbook-body{padding:0 12px 20px 31px}.playbook-meta{font:11px var(--mono);color:var(--muted);display:flex;gap:16px;flex-wrap:wrap;margin:0 0 14px}.script{background:var(--field);border:1px solid var(--line);border-radius:4px;overflow:auto;margin:8px 0 18px;max-height:260px}.step{display:grid;grid-template-columns:25px 45px minmax(180px,1fr) minmax(80px,.65fr);gap:12px;padding:9px 12px;min-width:480px;font:11px/1.5 var(--mono);border-bottom:1px solid #282b23}.step:last-child{border-bottom:0}.step-number{color:#737b65}.step-action{color:var(--accent);text-transform:uppercase}.step-selector,.step-value{white-space:pre-wrap;overflow-wrap:anywhere}.step-value{color:var(--muted)}.tips-label{display:block;margin-bottom:8px}.tips-cell textarea{min-height:65px;font-size:12px}.tips-footer{display:flex;align-items:center;gap:12px;margin-top:8px}.tips-footer button{padding:5px 10px;font-size:11px}.tip-status{font-size:11px;color:var(--muted)}.empty{padding:28px 12px;color:var(--muted);font-size:12px;line-height:1.8}.empty strong{display:block;color:var(--text);font-weight:500;font-size:13px;margin-bottom:4px}.empty button{margin-top:12px;font-size:12px}.activity{border-left:1px solid var(--line);padding-left:25px}.activity .section-heading{margin-bottom:10px}.live-label{font:10px var(--mono);color:var(--muted)}.event{padding:17px 0;border-bottom:1px solid var(--line);overflow-wrap:anywhere}.event-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:7px}.event-head b{font-size:12px;font-weight:500}.event time{font-size:10px;color:var(--muted)}.event-task{font-size:12px;margin-bottom:7px}.event-domain{font:10px var(--mono);color:var(--muted);margin-bottom:8px}.event-info{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font:10px var(--mono);color:var(--muted)}.event-result{margin-top:7px;font-size:11px;color:var(--red)}.event.new{animation:event-in .25s ease-out}.agents{margin-top:28px;border-top:1px solid var(--line);padding-top:20px}.agents h2{font-size:13px;margin-bottom:6px}.agents>p{font-size:11px;color:var(--muted);margin-bottom:12px}.agent{padding:8px 0;display:flex;align-items:center;gap:9px}.avatar{width:26px;height:26px;background:#303329;border:1px solid var(--line);border-radius:50%;display:grid;place-items:center;font:10px var(--mono);color:var(--accent)}.agent-name{font-size:12px}.agent-meta{font:10px var(--mono);color:var(--muted)}footer{display:flex;justify-content:space-between;gap:10px;border-top:1px solid var(--line);margin-top:32px;padding-top:15px;color:var(--muted);font:10px var(--mono)}@keyframes pulse{50%{opacity:.35}}@keyframes event-in{from{opacity:.3;transform:translateY(-4px)}to{opacity:1;transform:none}}@media(min-width:1000px){.activity{align-self:start}}@media(max-width:1000px){.workspace{grid-template-columns:minmax(0,1fr) 270px;gap:22px}.activity{padding-left:20px}.pipeline{gap:8px}.counts{gap:15px}.brand-sub{display:none}}@media(max-width:760px){.topbar{padding:14px 20px}main{padding:26px 20px}.workspace{grid-template-columns:1fr}.activity{border-left:0;border-top:1px solid var(--line);padding:24px 0 0}.memory-strip{align-items:flex-start;flex-direction:column}.intro{align-items:flex-start;flex-direction:column;gap:14px}.identity input{width:110px}.identity label{display:none}.command{padding:18px}.form-bottom{align-items:flex-start}.index-labels,.playbook>summary{grid-template-columns:minmax(0,1fr) 76px 48px;gap:8px}.playbook-body{padding-left:12px}h1{font-size:26px}.counts{gap:22px}footer{flex-wrap:wrap}}@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+[hidden]{display:none!important}.screen{min-height:100vh;display:grid;place-items:center;padding:24px}.screen-card{width:100%;max-width:420px;background:var(--panel);border:1px solid var(--line);border-radius:7px;padding:28px}.screen-card h1{font-size:25px;margin-bottom:10px}.screen-card p{font-size:12px;color:var(--muted);margin-bottom:20px}.screen-card label{display:block;color:var(--muted);font-size:12px;margin:14px 0 6px}.screen-card form>.primary{width:100%;margin-top:18px}.switcher{margin-top:14px;text-align:center;color:var(--muted);font-size:12px}.link-button{border:0;color:var(--accent);padding:3px;background:transparent;font-size:12px}.error-message{font-size:12px;color:var(--red);margin-top:12px;overflow-wrap:anywhere}.group-card{max-width:480px}.group-list{max-height:260px;overflow:auto;margin-top:14px}.group-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}.group-row strong{font-size:13px;font-weight:500}.group-row small{display:block;font-size:11px;color:var(--muted)}.group-row button{font-size:12px}.create-group{display:flex;gap:8px;margin-top:20px}.account-controls{display:flex;align-items:center;gap:10px}.group-button{font-size:12px;max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.account-wrap{position:relative}.account-button{font-size:12px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.account-panel{position:absolute;right:0;top:calc(100% + 10px);width:280px;padding:18px;background:var(--panel);border:1px solid var(--line);border-radius:6px;z-index:10;box-shadow:0 12px 32px #0004}.account-panel label{font-size:11px;color:var(--muted);display:block;margin-bottom:7px}.account-panel .row{display:flex;gap:8px}.account-panel input{font-size:12px;padding:8px}.account-panel button{font-size:12px}.account-email{font-size:11px;color:var(--muted);margin:15px 0;overflow-wrap:anywhere}.account-panel>.full{display:block;width:100%;margin-top:8px}.presence-dot{width:6px;height:6px;border-radius:50%;background:#686d60;flex-shrink:0}.presence-dot.online{background:var(--green)}.presence-dot.active{background:var(--accent);animation:pulse 1.2s ease-in-out infinite}.online-count{font:10px var(--mono);color:var(--muted)}@media(max-width:760px){.topbar{flex-wrap:wrap;gap:10px}.account-controls{gap:6px;margin-left:auto}.group-button{max-width:110px}.account-button{max-width:90px}.account-panel{width:min(280px,calc(100vw - 40px))}.screen-card{padding:22px}}
 </style>
 </head>
 <body>
+
+<div id="bootScreen" class="screen"><div class="screen-card"><h1>hivemind</h1><p id="bootMessage" role="status">Connecting to your workspace…</p><button id="retryBoot" type="button" hidden>Retry connection</button></div></div>
+<div id="authScreen" class="screen" hidden><div class="screen-card"><div class="eyebrow" style="margin-bottom:15px">Shared browser memory</div><h1>Welcome to hivemind.</h1><p id="authSub">Log in to your team's shared memory.</p><form id="loginForm"><label for="loginEmail">Email</label><input id="loginEmail" type="email" required autocomplete="username"><label for="loginPassword">Password</label><input id="loginPassword" type="password" required autocomplete="current-password"><button class="primary" type="submit">Log in</button><div class="switcher">No account? <button class="link-button" id="toSignup" type="button">Create one</button></div></form><form id="signupForm" hidden><label for="signupEmail">Email</label><input id="signupEmail" type="email" required autocomplete="username"><label for="signupPassword">Password (at least 8 characters)</label><input id="signupPassword" type="password" required minlength="8" autocomplete="new-password"><button class="primary" type="submit">Create account</button><div class="switcher">Have an account? <button class="link-button" id="toLogin" type="button">Log in</button></div></form><div id="authError" class="error-message" role="alert"></div></div></div>
+<div id="groupScreen" class="screen" hidden><div class="screen-card group-card"><h1 id="groupHeading">Join a group</h1><p>Share playbooks and activity with your team.</p><label for="groupSearch">Find a group</label><input id="groupSearch" type="search" placeholder="Search groups…"><div class="group-list" id="groupList"></div><form id="createGroupForm" class="create-group"><input id="newGroupName" placeholder="New group name" aria-label="New group name" required><button id="createGroupBtn" class="primary" type="submit">Create</button></form><div id="groupError" class="error-message" role="alert"></div><div class="switcher" id="cancelGroupSwitchRow" hidden><button id="cancelGroupSwitch" class="link-button" type="button">Cancel</button></div><div class="switcher" id="groupLogoutRow"><button id="groupLogoutBtn" class="link-button" type="button">Log out</button></div></div></div>
+<div id="appScreen" hidden>
 <header class="topbar">
   <a class="brand" href="/" aria-label="hivemind home"><svg class="glyph" viewBox="0 0 28 28" fill="none" aria-hidden="true"><path d="M14 3 24 9v11l-10 6-10-6V9Z M14 14 14 3 M14 14 4 20 M14 14 24 20" stroke="currentColor" stroke-width="1.4"/><circle cx="14" cy="14" r="3" fill="currentColor"/></svg>hivemind<span class="brand-sub">Shared browser memory</span></a>
-  <div class="identity"><label for="meName">Agent name</label><input id="meName" placeholder="your name" maxlength="80" aria-label="Your agent name"></div>
+  <div class="identity" id="identity"><label for="meName">Agent name</label><input id="meName" placeholder="your name" maxlength="80" aria-label="Your agent name"></div>
+  <div class="account-controls" id="accountControls" hidden><button type="button" id="switchGroupBtn" class="group-button" title="Switch group"></button><div class="account-wrap"><button type="button" id="gearBtn" class="account-button" aria-expanded="false" aria-controls="gearPanel" title="Account settings"></button><div id="gearPanel" class="account-panel" hidden><label for="displayNameInput">Display name</label><div class="row"><input id="displayNameInput" maxlength="80" placeholder="Your name"><button type="button" id="saveDisplayNameBtn">Save</button></div><div id="displayNameError" class="error-message" role="alert"></div><p id="gearEmail" class="account-email"></p><button id="tokenBtn" type="button" class="full">Copy API token</button><button id="logoutBtn" type="button" class="full">Log out</button></div></div></div>
 </header>
 <main>
   <div class="intro"><div><div class="eyebrow" style="margin-bottom:10px">Workspace / Overview</div><h1>Learn once. Run together.</h1><p>Browser tasks become memory the whole team can reuse.</p></div><div id="connection" class="connection" role="status"><span class="dot"></span><span id="connectionText">Connecting to hub…</span></div></div>
@@ -23,13 +31,16 @@
       <form class="run-form" id="runForm"><label for="runUrl">Target URL<input id="runUrl" type="url" placeholder="https://example.com" required></label><label for="runTaskText">What should the agent do?<textarea id="runTaskText" placeholder="Describe a task in plain English…" required></textarea></label><div class="form-bottom"><p>Verified tasks replay with zero LLM calls.</p><button class="primary" type="submit" id="runBtn">Run task <span aria-hidden="true">↗</span></button></div></form><div id="runStatus" role="status" aria-live="polite"></div>
     </section>
     <section aria-labelledby="libraryTitle"><div class="section-heading library-header"><div><h2 id="libraryTitle">Shared memory</h2><p>Learned workflows, ready for the next agent.</p></div><span class="eyebrow" id="libraryCount"></span></div><div class="filters"><input id="search" type="search" placeholder="Search tasks or domains…" aria-label="Search playbooks"><select id="statusFilter" aria-label="Filter playbooks by status"><option value="all">All statuses</option><option value="verified">Verified</option><option value="draft">Drafts</option></select></div><div class="index-labels eyebrow" aria-hidden="true"><span>Task / Domain</span><span>Status</span><span>Runs*</span></div><div id="playbooks"><p class="empty">Loading shared memory…</p></div><p class="muted" style="font-size:10px;margin:10px 12px 0">* Successful learning runs recorded by the library.</p></section>
-  </div><aside class="activity" aria-labelledby="activityTitle"><div class="section-heading"><h2 id="activityTitle">Activity</h2><span class="live-label">RECENT RUNS</span></div><div id="runs"><p class="empty">Loading activity…</p></div><section class="agents" aria-labelledby="agentsTitle"><h2 id="agentsTitle">Contributing agents</h2><p>Last seen in completed run history.</p><div id="agentStrip"></div></section></aside></div>
+  </div><aside class="activity" aria-labelledby="activityTitle"><div class="section-heading"><h2 id="activityTitle">Activity</h2><span class="live-label">RECENT RUNS</span></div><div id="runs"><p class="empty">Loading activity…</p></div><section class="agents" aria-labelledby="agentsTitle"><h2 id="agentsTitle">Contributing agents</h2><p id="agentsSub">Last seen in completed run history.</p><div id="agentStrip"></div></section></aside></div>
   <footer><span>hivemind / shared, self-compiling memory</span><span>Browser infrastructure by Steel</span></footer>
 </main>
+</div>
 <script>
 'use strict';
 const $ = (selector) => document.querySelector(selector);
-const state = { playbooks: [], runs: [], agents: [], loaded: false, refreshing: false, running: false, dirty: new Map(), open: new Set(), fingerprints: {}, runStarted: 0 };
+const state = { playbooks: [], runs: [], agents: [], loaded: false, refreshing: false, running: false, dirty: new Map(), open: new Set(), fingerprints: {}, runStarted: 0, epoch: 0, ready: false };
+let authMode = false, me = null, token = null;
+try { token = localStorage.getItem('hivemind_token'); } catch {}
 function esc(value) { return String(value ?? '').replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function safeUrl(value) { try { const u = new URL(value); return ['http:', 'https:'].includes(u.protocol) ? u.href : ''; } catch { return ''; } }
 function sessionLink(value) { const url = safeUrl(value); return url ? `<a href="${esc(url)}" target="_blank" rel="noopener noreferrer">View session ↗</a>` : ''; }
@@ -42,7 +53,18 @@ let myAgentName = ''; try { myAgentName = localStorage.getItem('hivemind_agent')
 if (!myAgentName) myAgentName = randomName();
 $('#meName').value = myAgentName;
 $('#meName').addEventListener('change', () => { myAgentName = $('#meName').value.trim() || randomName(); $('#meName').value = myAgentName; try { localStorage.setItem('hivemind_agent', myAgentName); } catch {} });
-async function api(url, options) { const response = await fetch(url, options); let body; try { body = await response.json(); } catch { throw new Error('Hub returned an unreadable response.'); } if (!response.ok) throw new Error(body.error || `Request failed (${response.status}).`); return body; }
+async function api(url, options = {}) {
+  const requestToken = token;
+  const headers = {'Content-Type':'application/json', ...options.headers};
+  if (authMode && requestToken) headers.Authorization = `Bearer ${requestToken}`;
+  const response = await fetch(url, {...options, headers});
+  if (authMode && requestToken === token && response.status === 401 && !['/api/auth/login', '/api/auth/signup'].includes(url)) {
+    signOut(); throw new Error('Session expired. Please log in again.');
+  }
+  let body; try { body = await response.json(); } catch { throw new Error('Hub returned an unreadable response.'); }
+  if (!response.ok) throw new Error(body.error || `Request failed (${response.status}).`);
+  return body;
+}
 function renderStats() { $('#totalCount').textContent = state.playbooks.length; $('#verifiedCount').textContent = state.playbooks.filter(p => p.status === 'verified').length; $('#draftCount').textContent = state.playbooks.filter(p => p.status === 'draft').length; }
 function scriptHtml(steps) { return `<div class="script" aria-label="Recorded automation steps">${steps.map((s, i) => `<div class="step"><span class="step-number">${String(i + 1).padStart(2, '0')}</span><span class="step-action">${esc(s.action)}</span><span class="step-selector">${esc(s.selector)}</span><span class="step-value">${/pass(word)?|secret|token/i.test(s.selector) && s.value ? '••••••••' : esc(s.value)}</span></div>`).join('')}</div>`; }
 function renderPlaybooks() {
@@ -73,11 +95,18 @@ function renderRuns() {
     state.runs = runs;
   };
 }
-function renderAgents() { $('#agentStrip').innerHTML = state.agents.length ? state.agents.map(a => `<div class="agent"><span class="avatar" aria-hidden="true">${esc(String(a.name).slice(0,2).toUpperCase())}</span><div><div class="agent-name">${esc(a.name)}</div><div class="agent-meta">${esc(a.runCount)} runs · ${esc(timeAgo(a.lastSeen))}</div></div></div>`).join('') : '<p class="muted" style="font-size:12px">No contributors yet.</p>'; }
+function renderAgents() {
+  $('#agentsTitle').textContent = authMode ? 'Team presence' : 'Contributing agents';
+  $('#agentsSub').textContent = authMode ? `${state.agents.filter(a => a.online).length} online · ${state.agents.filter(a => a.taskRunning).length} agents running` : 'Last seen in completed run history.';
+  $('#agentStrip').innerHTML = state.agents.length ? state.agents.map(a => `<div class="agent">${authMode ? `<span class="presence-dot ${a.online ? 'online' : ''} ${a.taskRunning ? 'active' : ''}" aria-label="${a.taskRunning ? 'Agent running' : a.online ? 'Online' : 'Offline'}"></span>` : ''}<span class="avatar" aria-hidden="true">${esc(String(a.name).slice(0,2).toUpperCase())}</span><div><div class="agent-name">${esc(a.name)}</div><div class="agent-meta">${authMode ? a.taskRunning ? 'Agent running' : a.online ? 'Online' : 'Offline' : `${esc(a.runCount)} runs · ${esc(timeAgo(a.lastSeen))}`}</div></div>`).join('') : '<p class="muted" style="font-size:12px">No contributors yet.</p>';
+}
 async function refreshAll() {
-  if (state.refreshing) return; state.refreshing = true;
-  const resources = ['/api/playbooks', '/api/runs?limit=30', '/api/agents'];
+  if (!state.ready || state.refreshing || (authMode && !me?.currentGroupId)) return; state.refreshing = true;
+  const epoch = state.epoch;
+  if (authMode) api('/api/presence/heartbeat', {method:'POST'}).catch(() => {});
+  const resources = ['/api/playbooks', '/api/runs?limit=30', authMode ? '/api/presence' : '/api/agents'];
   const results = await Promise.allSettled(resources.map(async url => { const data = await api(url); if (!Array.isArray(data)) throw new Error('Hub returned unexpected data.'); return data; }));
+  if (epoch !== state.epoch) return;
   const failures = results.filter(r => r.status === 'rejected');
   if (results[0].status === 'fulfilled') {
     const data = results[0].value, fp = JSON.stringify(data);
@@ -99,20 +128,148 @@ $('#runForm').addEventListener('submit', async e => {
   e.preventDefault(); if (state.running) return;
   const url = safeUrl($('#runUrl').value.trim()), task = $('#runTaskText').value.trim();
   if (!url || !task) { $('#runStatus').textContent = 'Enter an http(s) URL and a task description.'; return; }
-  state.running = true; state.runStarted = Date.now(); $('#runBtn').disabled = true; $('#meName').disabled = true; $('#runBtn').textContent = 'Running…'; $('#runStatus').className = '';
-  const showRunning = () => { $('#runStatus').innerHTML = `<div class="result-title"><span class="dot running-dot"></span><strong>AGENT RUNNING</strong></div><p class="muted">${esc(myAgentName)} is executing your task.</p><div class="result-meta"><span>${duration(Date.now() - state.runStarted)} elapsed</span><span>Waiting for browser result</span></div>`; };
+  const runEpoch = state.epoch;
+  const agentName = authMode ? (me.displayName || me.email) : myAgentName;
+  state.running = true; $('#switchGroupBtn').disabled = true; $('#logoutBtn').disabled = true; state.runStarted = Date.now(); $('#runBtn').disabled = true; $('#meName').disabled = true; $('#runBtn').textContent = 'Running…'; $('#runStatus').className = '';
+  const showRunning = () => { $('#runStatus').innerHTML = `<div class="result-title"><span class="dot running-dot"></span><strong>AGENT RUNNING</strong></div><p class="muted">${esc(agentName)} is executing your task.</p><div class="result-meta"><span>${duration(Date.now() - state.runStarted)} elapsed</span><span>Waiting for browser result</span></div>`; };
   showRunning(); const timer = setInterval(showRunning, 1000);
   try {
-    const result = await api('/api/tasks/run', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({url, task, agentName:myAgentName})});
+    const result = await api('/api/tasks/run', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(authMode ? {url, task} : {url, task, agentName:myAgentName})});
     clearInterval(timer);
+    if (runEpoch !== state.epoch) return;
     $('#runStatus').className = result.success ? 'result-success' : 'result-error';
     const title = !result.success ? 'EXECUTION FAILED' : result.usedLibrary === 'script' ? 'MEMORY REPLAYED' : 'TASK COMPLETE';
     $('#runStatus').innerHTML = `<div class="result-title"><strong>${title}</strong></div><p>${esc(result.summary)}</p><div class="result-meta"><span>${duration(result.elapsedMs)}</span><span>${esc(result.llmCalls ?? '—')} LLM calls</span><span>${result.usedLibrary === 'script' ? 'Memory replay' : result.usedLibrary === 'tips' ? 'Run with tips' : 'Cold run'}</span>${sessionLink(result.sessionViewerUrl)}</div>`;
   } catch (err) { clearInterval(timer); $('#runStatus').className = 'result-error'; $('#runStatus').textContent = `Run failed: ${err.message}`; }
-  finally { clearInterval(timer); state.running = false; $('#runBtn').disabled = false; $('#meName').disabled = false; $('#runBtn').innerHTML = 'Run task <span aria-hidden="true">↗</span>'; refreshAll(); }
+  finally { clearInterval(timer); state.running = false; $('#switchGroupBtn').disabled = false; $('#logoutBtn').disabled = false; $('#runBtn').disabled = false; $('#meName').disabled = false; $('#runBtn').innerHTML = 'Run task <span aria-hidden="true">↗</span>'; refreshAll(); }
 });
-refreshAll(); setInterval(() => { if (!document.hidden) refreshAll(); }, 4000);
-document.addEventListener('visibilitychange', () => { if (!document.hidden) refreshAll(); });
+// The ZIP distributions have team APIs; the source hub has the basic APIs.
+// Probe the actual server so all three entry points use this same frontend.
+function showScreen(screen) {
+  for (const name of ['boot', 'auth', 'group', 'app']) $(`#${name}Screen`).hidden = name !== screen;
+}
+function resetWorkspace() {
+  state.epoch += 1; state.refreshing = false; state.loaded = false;
+  state.playbooks = []; state.runs = []; state.agents = [];
+  state.dirty.clear(); state.open.clear(); state.fingerprints = {};
+  $('#playbooks').innerHTML = '<p class="empty">Loading shared memory…</p>';
+  $('#runs').innerHTML = '<p class="empty">Loading activity…</p>';
+  $('#agentStrip').innerHTML = ''; $('#runStatus').textContent = '';
+  $('#search').value = ''; $('#statusFilter').value = 'all'; $('#libraryCount').textContent = '';
+  for (const id of ['totalCount', 'verifiedCount', 'draftCount']) $(`#${id}`).textContent = '—';
+  closeAccount();
+}
+function setSession(body) {
+  token = body.token; me = body.user;
+  try { localStorage.setItem('hivemind_token', token); } catch {}
+}
+function signOut() {
+  token = null; me = null; resetWorkspace();
+  try { localStorage.removeItem('hivemind_token'); } catch {}
+  $('#loginPassword').value = ''; $('#signupPassword').value = '';
+  showScreen('auth');
+}
+async function logout() {
+  try { await api('/api/auth/logout', {method:'POST'}); } catch {}
+  signOut();
+}
+function renderAccount() {
+  $('#identity').hidden = authMode; $('#accountControls').hidden = !authMode;
+  if (!me) return;
+  $('#switchGroupBtn').textContent = `${me.currentGroupName || 'Group'} ▾`;
+  $('#gearBtn').textContent = `${me.displayName || me.email} ▾`;
+}
+async function afterAuth() {
+  resetWorkspace(); renderAccount();
+  if (!me.currentGroupId) await showGroupScreen(false);
+  else { showScreen('app'); await refreshAll(); }
+}
+function toggleAuth(signup) {
+  $('#loginForm').hidden = signup; $('#signupForm').hidden = !signup;
+  $('#authSub').textContent = signup ? 'Create an account to start sharing browser memory.' : "Log in to your team's shared memory.";
+  $('#authError').textContent = ''; $(signup ? '#signupEmail' : '#loginEmail').focus();
+}
+$('#toSignup').addEventListener('click', () => toggleAuth(true));
+$('#toLogin').addEventListener('click', () => toggleAuth(false));
+for (const mode of ['login', 'signup']) {
+  $(`#${mode}Form`).addEventListener('submit', async e => {
+    e.preventDefault(); const btn = e.currentTarget.querySelector('button[type="submit"]');
+    btn.disabled = true; $('#authError').textContent = '';
+    try {
+      const body = await api(`/api/auth/${mode}`, {method:'POST', body:JSON.stringify({email:$(`#${mode}Email`).value.trim(), password:$(`#${mode}Password`).value})});
+      setSession(body); $(`#${mode}Password`).value = ''; await afterAuth();
+    } catch (err) { $('#authError').textContent = err.message; }
+    finally { btn.disabled = false; }
+  });
+}
+let groupQuery = 0, groupTimer;
+async function loadGroups() {
+  const query = ++groupQuery;
+  $('#groupError').textContent = '';
+  try {
+    const groups = await api(`/api/groups?q=${encodeURIComponent($('#groupSearch').value.trim())}`);
+    if (query !== groupQuery || $('#groupScreen').hidden) return;
+    $('#groupList').innerHTML = groups.length ? groups.map(g => `<div class="group-row"><div><strong>${esc(g.name)}</strong><small>${esc(g.memberCount)} members</small></div><button type="button" data-group="${esc(g.id)}" ${g.id === me.currentGroupId ? 'disabled' : ''}>${g.id === me.currentGroupId ? 'Current' : g.isMember ? 'Switch' : 'Join'}</button></div>`).join('') : '<p class="empty">No groups found. Create one below.</p>';
+  } catch (err) { if (query === groupQuery) $('#groupError').textContent = err.message; }
+}
+async function showGroupScreen(switching) {
+  closeAccount(); $('#groupHeading').textContent = switching ? 'Switch group' : 'Join a group';
+  $('#cancelGroupSwitchRow').hidden = !switching; $('#groupSearch').value = ''; $('#groupError').textContent = '';
+  showScreen('group'); await loadGroups();
+}
+$('#groupSearch').addEventListener('input', () => { clearTimeout(groupTimer); groupTimer = setTimeout(loadGroups, 200); });
+$('#groupList').addEventListener('click', async e => {
+  const btn = e.target.closest('button[data-group]'); if (!btn || btn.disabled) return;
+  btn.disabled = true;
+  try { const body = await api(`/api/groups/${encodeURIComponent(btn.dataset.group)}/join`, {method:'POST'}); me = body.user; await afterAuth(); }
+  catch (err) { $('#groupError').textContent = err.message; }
+  finally { btn.disabled = false; }
+});
+$('#createGroupForm').addEventListener('submit', async e => {
+  e.preventDefault(); const name = $('#newGroupName').value.trim(); if (!name) return;
+  $('#createGroupBtn').disabled = true; $('#groupError').textContent = '';
+  try { const body = await api('/api/groups', {method:'POST', body:JSON.stringify({name})}); me = body.user; $('#newGroupName').value = ''; await afterAuth(); }
+  catch (err) { $('#groupError').textContent = err.message; }
+  finally { $('#createGroupBtn').disabled = false; }
+});
+$('#switchGroupBtn').addEventListener('click', () => showGroupScreen(true));
+$('#cancelGroupSwitch').addEventListener('click', () => { showScreen('app'); refreshAll(); });
+$('#groupLogoutBtn').addEventListener('click', logout);
+$('#logoutBtn').addEventListener('click', logout);
+function closeAccount() { $('#gearPanel').hidden = true; $('#gearBtn').setAttribute('aria-expanded', 'false'); }
+$('#gearBtn').addEventListener('click', () => {
+  const open = $('#gearPanel').hidden;
+  $('#gearPanel').hidden = !open; $('#gearBtn').setAttribute('aria-expanded', String(open));
+  if (open) { $('#displayNameInput').value = me.displayName || ''; $('#gearEmail').textContent = me.email; $('#displayNameError').textContent = ''; $('#displayNameInput').focus(); }
+});
+document.addEventListener('click', e => { if (!e.target.closest('.account-wrap')) closeAccount(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#gearPanel').hidden) { closeAccount(); $('#gearBtn').focus(); } });
+$('#saveDisplayNameBtn').addEventListener('click', async () => {
+  const displayName = $('#displayNameInput').value.trim(); if (!displayName) { $('#displayNameError').textContent = 'Enter a name.'; return; }
+  $('#saveDisplayNameBtn').disabled = true;
+  try { const body = await api('/api/auth/display-name', {method:'PUT', body:JSON.stringify({displayName})}); me = body.user; renderAccount(); closeAccount(); }
+  catch (err) { $('#displayNameError').textContent = err.message; }
+  finally { $('#saveDisplayNameBtn').disabled = false; }
+});
+$('#tokenBtn').addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText(token); $('#tokenBtn').textContent = 'Token copied'; setTimeout(() => { $('#tokenBtn').textContent = 'Copy API token'; }, 1200); }
+  catch { $('#displayNameError').textContent = 'Clipboard unavailable. Use a browser with clipboard access.'; }
+});
+async function boot() {
+  state.ready = false; showScreen('boot'); $('#retryBoot').hidden = true;
+  $('#bootMessage').textContent = 'Connecting to your workspace…';
+  try {
+    const response = await fetch('/api/auth/me', {headers:token ? {Authorization:`Bearer ${token}`} : {}});
+    if (response.status === 404) { authMode = false; state.ready = true; renderAccount(); showScreen('app'); await refreshAll(); }
+    else if (response.status === 401) { authMode = true; state.ready = true; signOut(); }
+    else if (response.ok) { const body = await response.json(); if (!body.user) throw new Error('Invalid account response.'); authMode = true; me = body.user; state.ready = true; await afterAuth(); }
+    else throw new Error(`Hub returned ${response.status}.`);
+  } catch (err) { $('#bootMessage').textContent = `Could not connect: ${err.message}`; $('#retryBoot').hidden = false; }
+}
+$('#retryBoot').addEventListener('click', boot);
+
+boot(); setInterval(() => { if (!document.hidden && !$('#appScreen').hidden) refreshAll(); }, 4000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden && !$('#appScreen').hidden) refreshAll(); });
 </script>
 </body>
 </html>
