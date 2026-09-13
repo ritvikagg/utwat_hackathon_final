@@ -1,391 +1,118 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>hivemind</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#191a18">
+<title>hivemind · Shared memory</title>
 <style>
-  :root {
-    color-scheme: dark;
-    --bg: #0d1117;
-    --panel: #161b22;
-    --border: #30363d;
-    --text: #e6edf3;
-    --muted: #8b949e;
-    --accent: #58a6ff;
-    --green: #3fb950;
-    --yellow: #d29922;
-    --red: #f85149;
-  }
-  * { box-sizing: border-box; }
-  html, body { max-width: 100%; overflow-x: hidden; }
-  body {
-    margin: 0;
-    background: var(--bg);
-    color: var(--text);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    font-size: 14px;
-  }
-  header {
-    padding: 20px 28px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-  header h1 { margin: 0; font-size: 20px; letter-spacing: -0.02em; }
-  header h1 span { color: var(--accent); }
-  #agentStrip { display: flex; gap: 8px; flex-wrap: wrap; }
-  .agent-chip {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 999px;
-    padding: 4px 12px;
-    font-size: 12px;
-    color: var(--muted);
-    white-space: nowrap;
-  }
-  .agent-chip b { color: var(--text); }
-  #meBox { display: flex; align-items: center; gap: 6px; }
-  #meBox label { color: var(--muted); font-size: 12px; }
-  #meName {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    color: var(--text);
-    padding: 5px 9px;
-    font-size: 12px;
-    width: 110px;
-  }
-  main {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 24px 28px 60px;
-    display: grid;
-    gap: 24px;
-  }
-  section {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 18px 20px;
-  }
-  section h2 {
-    margin: 0 0 14px;
-    font-size: 13px;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--muted);
-  }
-  form.run-form {
-    display: grid;
-    grid-template-columns: 1.3fr 2fr auto;
-    gap: 10px;
-  }
-  @media (max-width: 640px) {
-    form.run-form { grid-template-columns: 1fr; }
-  }
-  input {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    color: var(--text);
-    padding: 9px 11px;
-    font-size: 13px;
-    width: 100%;
-    min-width: 0;
-  }
-  button {
-    background: var(--accent);
-    border: none;
-    border-radius: 6px;
-    color: #061224;
-    font-weight: 600;
-    padding: 9px 18px;
-    cursor: pointer;
-    font-size: 13px;
-  }
-  button:disabled { opacity: 0.5; cursor: default; }
-  button.secondary {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--text);
-    font-weight: 400;
-  }
-  #runStatus { margin-top: 10px; font-size: 13px; color: var(--muted); min-height: 18px; }
-  #runStatus a { color: var(--accent); }
-  .table-scroll { overflow-x: auto; }
-  table { width: 100%; min-width: 640px; border-collapse: collapse; }
-  th {
-    text-align: left;
-    font-size: 11px;
-    text-transform: uppercase;
-    color: var(--muted);
-    padding: 6px 10px;
-    border-bottom: 1px solid var(--border);
-  }
-  td {
-    padding: 8px 10px;
-    border-bottom: 1px solid var(--border);
-    vertical-align: top;
-  }
-  tr:last-child td { border-bottom: none; }
-  .badge {
-    display: inline-block;
-    padding: 2px 9px;
-    border-radius: 999px;
-    font-size: 11px;
-    font-weight: 600;
-  }
-  .badge.verified { background: rgba(63,185,80,0.15); color: var(--green); }
-  .badge.draft { background: rgba(210,153,34,0.15); color: var(--yellow); }
-  .badge.script { background: rgba(63,185,80,0.15); color: var(--green); }
-  .badge.tips { background: rgba(88,166,255,0.15); color: var(--accent); }
-  .badge.none { background: rgba(139,148,158,0.15); color: var(--muted); }
-  .badge.ok { background: rgba(63,185,80,0.15); color: var(--green); }
-  .badge.fail { background: rgba(248,81,73,0.15); color: var(--red); }
-  .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
-  .muted { color: var(--muted); }
-  .tips-cell textarea {
-    width: 100%;
-    min-height: 44px;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    color: var(--text);
-    font-size: 12px;
-    padding: 6px 8px;
-    resize: vertical;
-  }
-  .tips-cell button { margin-top: 6px; padding: 4px 10px; font-size: 11px; }
-  details summary { cursor: pointer; color: var(--accent); font-size: 12px; }
-  details pre {
-    margin-top: 6px;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 8px;
-    font-size: 11px;
-    max-height: 180px;
-    overflow: auto;
-  }
-  .empty { color: var(--muted); font-size: 13px; padding: 10px 0; }
+:root{color-scheme:dark;--bg:#191a18;--panel:#20211e;--field:#171815;--line:#363831;--text:#edeee7;--muted:#a2a69a;--accent:#c3e879;--green:#91c99b;--amber:#dabb7c;--red:#e49c91;--mono:ui-monospace,SFMono-Regular,Consolas,monospace}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}button,input,textarea,select{font:inherit}button,a,input,textarea,select,summary{-webkit-tap-highlight-color:transparent}button{cursor:pointer}button:disabled{opacity:.55;cursor:wait}a{color:var(--accent);text-underline-offset:3px}button:focus-visible,a:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:4px}input:focus,textarea:focus,select:focus{outline:2px solid var(--accent);outline-offset:2px}button{border:1px solid var(--line);border-radius:5px;padding:8px 13px;background:transparent;color:var(--text);transition:background .15s,border-color .15s}button:hover:not(:disabled){background:#30332a;border-color:#666c58}.primary{background:var(--accent);color:#202716;border-color:var(--accent);font-weight:650}.primary:hover:not(:disabled){background:#d2f49a;border-color:#d2f49a}input,textarea,select{width:100%;min-width:0;border:1px solid var(--line);border-radius:5px;background:var(--field);padding:10px 12px;color:var(--text)}input::placeholder,textarea::placeholder{color:#777d6f}textarea{resize:vertical}h1,h2,p{margin:0}h1{font-size:30px;line-height:1.2;font-weight:600;letter-spacing:-1px}h2{font-size:16px;font-weight:600;letter-spacing:-.3px}.muted{color:var(--muted)}.mono,.eyebrow,time{font-family:var(--mono);font-variant-numeric:tabular-nums}.eyebrow{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted)}.glyph{width:25px;height:25px;color:var(--accent);flex-shrink:0}.topbar{border-bottom:1px solid var(--line);padding:15px 32px;display:flex;align-items:center;justify-content:space-between;gap:20px}.brand{display:flex;align-items:center;gap:10px;font-size:21px;font-weight:650;letter-spacing:-.7px;text-decoration:none;color:var(--text)}.brand-sub{border-left:1px solid var(--line);padding-left:20px;letter-spacing:0;margin-left:10px;font-size:12px;font-weight:400;color:var(--muted)}.identity{display:flex;align-items:center;gap:10px}.identity label{font-size:12px;color:var(--muted)}.identity input{width:140px;padding:6px 9px;font-size:12px}main{max-width:1320px;margin:auto;padding:36px 32px 50px}.intro{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:26px}.intro p{color:var(--muted);margin-top:10px}.connection{display:flex;align-items:center;gap:7px;font:11px var(--mono);color:var(--muted);white-space:nowrap}.dot{width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block}.connection.error .dot{background:var(--red)}.connection.error{color:var(--red)}.memory-strip{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:16px 0;display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:28px}.pipeline{display:flex;align-items:center;gap:14px;color:var(--muted);font:11px var(--mono)}.pipeline .arrow{color:#646a59}.pipeline .last{color:var(--accent)}.counts{display:flex;gap:26px}.count{display:flex;align-items:baseline;gap:7px}.count b{font:19px var(--mono);color:var(--text)}.count span{color:var(--muted);font-size:12px}.workspace{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:36px}.left,.activity{min-width:0}.command{background:var(--panel);border:1px solid var(--line);border-radius:7px;padding:22px;margin-bottom:32px}.section-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}.command .section-heading{margin-bottom:20px}.run-form{display:grid;gap:15px}.run-form label{display:grid;gap:7px;font-size:12px;color:var(--muted)}#runUrl{font-family:var(--mono);font-size:12px}#runTaskText{min-height:78px;font-size:14px}.form-bottom{display:flex;align-items:center;justify-content:space-between;gap:16px}.form-bottom p{font-size:12px;color:var(--muted)}#runBtn{white-space:nowrap;padding:9px 18px}#runStatus:empty{display:none}#runStatus{margin-top:18px;padding-top:16px;border-top:1px solid var(--line);font-size:12px;overflow-wrap:anywhere}.result-title{display:flex;align-items:center;gap:8px;margin-bottom:8px}.result-title strong{font:11px var(--mono);letter-spacing:.8px}.result-success .result-title{color:var(--accent)}.result-error{color:var(--red)}.result-meta{display:flex;gap:14px;flex-wrap:wrap;margin-top:9px;color:var(--muted);font:11px var(--mono)}.running-dot{background:var(--accent);animation:pulse 1.2s ease-in-out infinite}.library-header{margin-bottom:16px}.library-header p{font-size:12px;color:var(--muted);margin-top:4px}.filters{display:flex;gap:10px;margin-bottom:15px}.filters input{flex:1;font-size:12px}.filters select{width:120px;font-size:12px}.index-labels{display:grid;grid-template-columns:1fr 80px 70px;gap:12px;padding:0 12px 10px;border-bottom:1px solid var(--line)}.index-labels span:nth-child(n+2){text-align:right}.playbook{border-bottom:1px solid var(--line)}.playbook>summary{list-style:none;display:grid;grid-template-columns:minmax(0,1fr) 80px 70px;align-items:center;gap:12px;padding:16px 12px;cursor:pointer}.playbook>summary::-webkit-details-marker{display:none}.playbook>summary:hover{background:var(--panel)}.task-title{display:flex;gap:9px;align-items:baseline;font-weight:500;overflow-wrap:anywhere}.chevron{font:14px var(--mono);color:var(--muted);display:inline-block;transition:transform .15s}.playbook[open] .chevron{transform:rotate(90deg)}.domain{font:11px var(--mono);color:var(--muted);margin:4px 0 0 19px}.badge{font:10px var(--mono);text-transform:uppercase;white-space:nowrap}.verified{color:var(--green)}.draft{color:var(--amber)}.right{text-align:right}.success-count{font:12px var(--mono);color:var(--muted)}.playbook-body{padding:0 12px 20px 31px}.playbook-meta{font:11px var(--mono);color:var(--muted);display:flex;gap:16px;flex-wrap:wrap;margin:0 0 14px}.script{background:var(--field);border:1px solid var(--line);border-radius:4px;overflow:auto;margin:8px 0 18px;max-height:260px}.step{display:grid;grid-template-columns:25px 45px minmax(180px,1fr) minmax(80px,.65fr);gap:12px;padding:9px 12px;min-width:480px;font:11px/1.5 var(--mono);border-bottom:1px solid #282b23}.step:last-child{border-bottom:0}.step-number{color:#737b65}.step-action{color:var(--accent);text-transform:uppercase}.step-selector,.step-value{white-space:pre-wrap;overflow-wrap:anywhere}.step-value{color:var(--muted)}.tips-label{display:block;margin-bottom:8px}.tips-cell textarea{min-height:65px;font-size:12px}.tips-footer{display:flex;align-items:center;gap:12px;margin-top:8px}.tips-footer button{padding:5px 10px;font-size:11px}.tip-status{font-size:11px;color:var(--muted)}.empty{padding:28px 12px;color:var(--muted);font-size:12px;line-height:1.8}.empty strong{display:block;color:var(--text);font-weight:500;font-size:13px;margin-bottom:4px}.empty button{margin-top:12px;font-size:12px}.activity{border-left:1px solid var(--line);padding-left:25px}.activity .section-heading{margin-bottom:10px}.live-label{font:10px var(--mono);color:var(--muted)}.event{padding:17px 0;border-bottom:1px solid var(--line);overflow-wrap:anywhere}.event-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:7px}.event-head b{font-size:12px;font-weight:500}.event time{font-size:10px;color:var(--muted)}.event-task{font-size:12px;margin-bottom:7px}.event-domain{font:10px var(--mono);color:var(--muted);margin-bottom:8px}.event-info{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font:10px var(--mono);color:var(--muted)}.event-result{margin-top:7px;font-size:11px;color:var(--red)}.event.new{animation:event-in .25s ease-out}.agents{margin-top:28px;border-top:1px solid var(--line);padding-top:20px}.agents h2{font-size:13px;margin-bottom:6px}.agents>p{font-size:11px;color:var(--muted);margin-bottom:12px}.agent{padding:8px 0;display:flex;align-items:center;gap:9px}.avatar{width:26px;height:26px;background:#303329;border:1px solid var(--line);border-radius:50%;display:grid;place-items:center;font:10px var(--mono);color:var(--accent)}.agent-name{font-size:12px}.agent-meta{font:10px var(--mono);color:var(--muted)}footer{display:flex;justify-content:space-between;gap:10px;border-top:1px solid var(--line);margin-top:32px;padding-top:15px;color:var(--muted);font:10px var(--mono)}@keyframes pulse{50%{opacity:.35}}@keyframes event-in{from{opacity:.3;transform:translateY(-4px)}to{opacity:1;transform:none}}@media(min-width:1000px){.activity{align-self:start}}@media(max-width:1000px){.workspace{grid-template-columns:minmax(0,1fr) 270px;gap:22px}.activity{padding-left:20px}.pipeline{gap:8px}.counts{gap:15px}.brand-sub{display:none}}@media(max-width:760px){.topbar{padding:14px 20px}main{padding:26px 20px}.workspace{grid-template-columns:1fr}.activity{border-left:0;border-top:1px solid var(--line);padding:24px 0 0}.memory-strip{align-items:flex-start;flex-direction:column}.intro{align-items:flex-start;flex-direction:column;gap:14px}.identity input{width:110px}.identity label{display:none}.command{padding:18px}.form-bottom{align-items:flex-start}.index-labels,.playbook>summary{grid-template-columns:minmax(0,1fr) 76px 48px;gap:8px}.playbook-body{padding-left:12px}h1{font-size:26px}.counts{gap:22px}footer{flex-wrap:wrap}}@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
-
-<header>
-  <h1>hive<span>mind</span></h1>
-  <div id="meBox">
-    <div id="agentStrip"></div>
-    <label for="meName">You:</label>
-    <input id="meName" placeholder="your name" />
-  </div>
+<header class="topbar">
+  <a class="brand" href="/" aria-label="hivemind home"><svg class="glyph" viewBox="0 0 28 28" fill="none" aria-hidden="true"><path d="M14 3 24 9v11l-10 6-10-6V9Z M14 14 14 3 M14 14 4 20 M14 14 24 20" stroke="currentColor" stroke-width="1.4"/><circle cx="14" cy="14" r="3" fill="currentColor"/></svg>hivemind<span class="brand-sub">Shared browser memory</span></a>
+  <div class="identity"><label for="meName">Agent name</label><input id="meName" placeholder="your name" maxlength="80" aria-label="Your agent name"></div>
 </header>
-
 <main>
-  <section>
-    <h2>Run a task</h2>
-    <form class="run-form" id="runForm">
-      <input id="runUrl" placeholder="https://example.com" required />
-      <input id="runTaskText" placeholder="task description (e.g. click the Learn more link)" required />
-      <button type="submit" id="runBtn">Run</button>
-    </form>
-    <div id="runStatus"></div>
-  </section>
-
-  <section>
-    <h2>Shared playbook library</h2>
-    <div id="playbooks"></div>
-  </section>
-
-  <section>
-    <h2>Activity — across every agent</h2>
-    <div id="runs"></div>
-  </section>
+  <div class="intro"><div><div class="eyebrow" style="margin-bottom:10px">Workspace / Overview</div><h1>Learn once. Run together.</h1><p>Browser tasks become memory the whole team can reuse.</p></div><div id="connection" class="connection" role="status"><span class="dot"></span><span id="connectionText">Connecting to hub…</span></div></div>
+  <div class="memory-strip" aria-label="Shared memory overview"><div class="pipeline"><span>AGENT</span><span class="arrow" aria-hidden="true">→</span><span>LEARN</span><span class="arrow" aria-hidden="true">→</span><span>VERIFY</span><span class="arrow" aria-hidden="true">→</span><span class="last">REPLAY</span></div><div class="counts"><div class="count"><b id="totalCount">—</b><span>playbooks</span></div><div class="count"><b id="verifiedCount">—</b><span>verified</span></div><div class="count"><b id="draftCount">—</b><span>drafts</span></div></div></div>
+  <div class="workspace"><div class="left">
+    <section class="command" aria-labelledby="commandTitle"><div class="section-heading"><h2 id="commandTitle">Run a browser task</h2><span class="eyebrow">Command</span></div>
+      <form class="run-form" id="runForm"><label for="runUrl">Target URL<input id="runUrl" type="url" placeholder="https://example.com" required></label><label for="runTaskText">What should the agent do?<textarea id="runTaskText" placeholder="Describe a task in plain English…" required></textarea></label><div class="form-bottom"><p>Verified tasks replay with zero LLM calls.</p><button class="primary" type="submit" id="runBtn">Run task <span aria-hidden="true">↗</span></button></div></form><div id="runStatus" role="status" aria-live="polite"></div>
+    </section>
+    <section aria-labelledby="libraryTitle"><div class="section-heading library-header"><div><h2 id="libraryTitle">Shared memory</h2><p>Learned workflows, ready for the next agent.</p></div><span class="eyebrow" id="libraryCount"></span></div><div class="filters"><input id="search" type="search" placeholder="Search tasks or domains…" aria-label="Search playbooks"><select id="statusFilter" aria-label="Filter playbooks by status"><option value="all">All statuses</option><option value="verified">Verified</option><option value="draft">Drafts</option></select></div><div class="index-labels eyebrow" aria-hidden="true"><span>Task / Domain</span><span>Status</span><span>Runs*</span></div><div id="playbooks"><p class="empty">Loading shared memory…</p></div><p class="muted" style="font-size:10px;margin:10px 12px 0">* Successful learning runs recorded by the library.</p></section>
+  </div><aside class="activity" aria-labelledby="activityTitle"><div class="section-heading"><h2 id="activityTitle">Activity</h2><span class="live-label">RECENT RUNS</span></div><div id="runs"><p class="empty">Loading activity…</p></div><section class="agents" aria-labelledby="agentsTitle"><h2 id="agentsTitle">Contributing agents</h2><p>Last seen in completed run history.</p><div id="agentStrip"></div></section></aside></div>
+  <footer><span>hivemind / shared, self-compiling memory</span><span>Browser infrastructure by Steel</span></footer>
 </main>
-
 <script>
-const $ = (sel) => document.querySelector(sel);
-
-function randomName() {
-  const adjectives = ['swift', 'quiet', 'bright', 'brisk', 'keen'];
-  const animals = ['otter', 'falcon', 'lynx', 'heron', 'fox'];
-  const a = adjectives[Math.floor(Math.random() * adjectives.length)];
-  const b = animals[Math.floor(Math.random() * animals.length)];
-  return `${a}-${b}`;
-}
-
-let myAgentName = '';
-try {
-  myAgentName = localStorage.getItem('hivemind_agent') || '';
-} catch {
-  // localStorage can throw in some embedded/private contexts — fall back below.
-}
+'use strict';
+const $ = (selector) => document.querySelector(selector);
+const state = { playbooks: [], runs: [], agents: [], loaded: false, refreshing: false, running: false, dirty: new Map(), open: new Set(), fingerprints: {}, runStarted: 0 };
+function esc(value) { return String(value ?? '').replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function safeUrl(value) { try { const u = new URL(value); return ['http:', 'https:'].includes(u.protocol) ? u.href : ''; } catch { return ''; } }
+function sessionLink(value) { const url = safeUrl(value); return url ? `<a href="${esc(url)}" target="_blank" rel="noopener noreferrer">View session ↗</a>` : ''; }
+function timeAgo(iso) { const ms = new Date(iso).getTime(); if (!Number.isFinite(ms)) return 'Unknown time'; const s = Math.max(0, (Date.now() - ms) / 1000); if (s < 60) return `${Math.floor(s)}s ago`; if (s < 3600) return `${Math.floor(s / 60)}m ago`; if (s < 86400) return `${Math.floor(s / 3600)}h ago`; return `${Math.floor(s / 86400)}d ago`; }
+function duration(ms) { return Number.isFinite(ms) ? `${(ms / 1000).toFixed(1)}s` : '—'; }
+function key(p) { return JSON.stringify([p.domain, p.taskSignature]); }
+function taskName(p) { return String(p.taskSignature || 'Untitled task').replace(/-/g, ' '); }
+function randomName() { return `agent-${Math.random().toString(36).slice(2, 6)}`; }
+let myAgentName = ''; try { myAgentName = localStorage.getItem('hivemind_agent') || ''; } catch {}
 if (!myAgentName) myAgentName = randomName();
-
-const meInput = $('#meName');
-meInput.value = myAgentName;
-meInput.addEventListener('change', () => {
-  myAgentName = meInput.value.trim() || randomName();
-  meInput.value = myAgentName;
-  try {
-    localStorage.setItem('hivemind_agent', myAgentName);
-  } catch {
-    // Ignore — name just won't persist across reloads in this context.
-  }
+$('#meName').value = myAgentName;
+$('#meName').addEventListener('change', () => { myAgentName = $('#meName').value.trim() || randomName(); $('#meName').value = myAgentName; try { localStorage.setItem('hivemind_agent', myAgentName); } catch {} });
+async function api(url, options) { const response = await fetch(url, options); let body; try { body = await response.json(); } catch { throw new Error('Hub returned an unreadable response.'); } if (!response.ok) throw new Error(body.error || `Request failed (${response.status}).`); return body; }
+function renderStats() { $('#totalCount').textContent = state.playbooks.length; $('#verifiedCount').textContent = state.playbooks.filter(p => p.status === 'verified').length; $('#draftCount').textContent = state.playbooks.filter(p => p.status === 'draft').length; }
+function scriptHtml(steps) { return `<div class="script" aria-label="Recorded automation steps">${steps.map((s, i) => `<div class="step"><span class="step-number">${String(i + 1).padStart(2, '0')}</span><span class="step-action">${esc(s.action)}</span><span class="step-selector">${esc(s.selector)}</span><span class="step-value">${/pass(word)?|secret|token/i.test(s.selector) && s.value ? '••••••••' : esc(s.value)}</span></div>`).join('')}</div>`; }
+function renderPlaybooks() {
+  const query = $('#search').value.trim().toLowerCase(), filter = $('#statusFilter').value;
+  const entries = state.playbooks.map((p, i) => ({p, i})).filter(({p}) => (!query || `${p.domain} ${p.taskSignature} ${taskName(p)}`.toLowerCase().includes(query)) && (filter === 'all' || p.status === filter));
+  $('#libraryCount').textContent = `${entries.length} / ${state.playbooks.length}`;
+  if (!entries.length) { $('#playbooks').innerHTML = state.playbooks.length ? '<div class="empty"><strong>No matching playbooks</strong>Try a different search or status.</div>' : '<div class="empty"><strong>No shared memory yet</strong>Run the same task successfully twice to start compiling reusable behavior.<br><button type="button" id="firstTask">Run first task ↗</button></div>'; $('#firstTask')?.addEventListener('click', () => { $('#runUrl').focus(); $('#runUrl').scrollIntoView({block:'center', behavior:'smooth'}); }); return; }
+  $('#playbooks').innerHTML = entries.map(({p, i}) => {
+    const verified = p.status === 'verified', steps = Array.isArray(p.script) ? p.script : [], trace = Array.isArray(p.lastTrace) ? p.lastTrace : [], dirty = state.dirty.get(key(p));
+    return `<details class="playbook" data-idx="${i}" ${state.open.has(key(p)) ? 'open' : ''}><summary><div><div class="task-title"><span class="chevron" aria-hidden="true">›</span><span>${esc(taskName(p))}</span></div><div class="domain">${esc(p.domain)}</div></div><span class="badge ${verified ? 'verified' : 'draft'} right">${verified ? '● Verified' : '◌ Draft'}</span><span class="success-count right">${esc(p.successCount ?? 0)}</span></summary><div class="playbook-body"><div class="playbook-meta"><span>Updated ${esc(timeAgo(p.updatedAt))}</span>${verified && steps.length ? '<span class="verified">0 LLM calls on replay</span>' : '<span class="draft">Learning from successful runs</span>'}</div><div class="eyebrow">${steps.length ? 'Compiled script' : 'Latest recorded trace'}</div>${steps.length || trace.length ? scriptHtml(steps.length ? steps : trace) : '<p class="empty">No recorded steps available yet.</p>'}<div class="tips-cell"><label class="tips-label eyebrow" for="tips-${i}">Human note</label><textarea id="tips-${i}" data-tip="${i}" placeholder="Add context for the next agent…">${esc(dirty ?? p.tips)}</textarea><div class="tips-footer"><button type="button" data-save="${i}">Save note</button><span class="tip-status" id="tip-status-${i}" role="status">${dirty !== undefined ? 'Unsaved changes' : ''}</span></div></div></div></details>`;
+  }).join('');
+  $('#playbooks').querySelectorAll('details').forEach(el => el.addEventListener('toggle', () => { const p = state.playbooks[Number(el.dataset.idx)]; if (el.open) state.open.add(key(p)); else state.open.delete(key(p)); }));
+}
+$('#playbooks').addEventListener('input', e => { const idx = e.target.dataset.tip; if (idx === undefined) return; state.dirty.set(key(state.playbooks[Number(idx)]), e.target.value); $(`#tip-status-${idx}`).textContent = 'Unsaved changes'; });
+$('#playbooks').addEventListener('click', async e => {
+  const btn = e.target.closest('button[data-save]'); if (!btn) return;
+  const idx = Number(btn.dataset.save), entry = state.playbooks[idx], entryKey = key(entry), tips = $(`#tips-${idx}`).value, status = $(`#tip-status-${idx}`);
+  btn.disabled = true; status.textContent = 'Saving…';
+  try { const updated = {...entry, tips, updatedAt: new Date().toISOString()}; await api('/api/playbooks', {method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(updated)}); Object.assign(entry, updated); if (state.dirty.get(entryKey) === tips) state.dirty.delete(entryKey); status.textContent = state.dirty.has(entryKey) ? 'Unsaved changes' : 'Saved'; }
+  catch (err) { status.textContent = `Could not save: ${err.message}`; }
+  finally { btn.disabled = false; }
 });
-
-function timeAgo(iso) {
-  const s = Math.max(0, (Date.now() - new Date(iso).getTime()) / 1000);
-  if (s < 60) return Math.floor(s) + 's ago';
-  if (s < 3600) return Math.floor(s / 60) + 'm ago';
-  return Math.floor(s / 3600) + 'h ago';
+$('#search').addEventListener('input', renderPlaybooks); $('#statusFilter').addEventListener('change', renderPlaybooks);
+function renderRuns() {
+  const oldIds = new Set(state.runs.map(r => r.id));
+  return (runs) => {
+    $('#runs').innerHTML = runs.length ? runs.slice(0, 12).map(r => `<article class="event ${state.loaded && !oldIds.has(r.id) ? 'new' : ''}"><div class="event-head"><b>${esc(r.agentName)}</b><time datetime="${esc(r.timestamp)}" title="${esc(r.timestamp)}">${esc(timeAgo(r.timestamp))}</time></div><p class="event-task">${esc(r.taskDescription)}</p><div class="event-domain">${esc(r.domain)}</div><div class="event-info"><span class="badge ${r.success ? (r.mode === 'script' ? 'verified' : 'muted') : 'result-error'}">${r.success ? (r.mode === 'script' ? 'Memory replay' : r.mode === 'tips' ? 'Run with tips' : 'Cold run') : 'Run failed'}</span><span>${duration(r.elapsedMs)}</span><span>${esc(r.llmCalls ?? '—')} LLM calls</span>${sessionLink(r.sessionViewerUrl)}</div>${!r.success ? `<p class="event-result">${esc(r.summary)}</p>` : ''}</article>`).join('') : '<div class="empty"><strong>No activity yet</strong>Completed browser runs will appear here.</div>';
+    state.runs = runs;
+  };
 }
-function esc(str) {
-  const d = document.createElement('div');
-  d.textContent = str ?? '';
-  return d.innerHTML;
-}
-
-async function loadAgents() {
-  const agents = await fetch('/api/agents').then((r) => r.json());
-  $('#agentStrip').innerHTML =
-    agents.length === 0
-      ? ''
-      : agents
-          .map(
-            (a) =>
-              `<span class="agent-chip"><b>${esc(a.name)}</b> · ${a.runCount} runs · ${timeAgo(a.lastSeen)}</span>`
-          )
-          .join('');
-}
-
-async function loadPlaybooks() {
-  const playbooks = await fetch('/api/playbooks').then((r) => r.json());
-  const el = $('#playbooks');
-  if (playbooks.length === 0) {
-    el.innerHTML = '<div class="empty">No playbooks yet — run a task below to start teaching the library.</div>';
-    return;
-  }
-  el.innerHTML = `
-    <div class="table-scroll">
-    <table>
-      <thead><tr>
-        <th>Domain / Task</th><th>Status</th><th>Successes</th><th>Script</th><th>Tips (editable)</th>
-      </tr></thead>
-      <tbody>
-        ${playbooks
-          .map((p, i) => `
-            <tr>
-              <td><div class="mono">${esc(p.domain)}</div><div class="muted">${esc(p.taskSignature)}</div></td>
-              <td><span class="badge ${p.status}">${p.status}</span></td>
-              <td>${p.successCount}</td>
-              <td>${
-                p.script
-                  ? `<details><summary>${p.script.length} steps</summary><pre>${esc(JSON.stringify(p.script, null, 2))}</pre></details>`
-                  : '<span class="muted">—</span>'
-              }</td>
-              <td class="tips-cell">
-                <textarea id="tips-${i}" placeholder="Add a tip for this site...">${esc(p.tips)}</textarea>
-                <button class="secondary" data-domain="${esc(p.domain)}" data-task="${esc(p.taskSignature)}" data-idx="${i}">Save tip</button>
-              </td>
-            </tr>
-          `)
-          .join('')}
-      </tbody>
-    </table>
-    </div>
-  `;
-  el.querySelectorAll('button[data-domain]').forEach((btn) => {
-    btn.addEventListener('click', async () => {
-      const idx = btn.dataset.idx;
-      const tips = $(`#tips-${idx}`).value;
-      const entry = playbooks[idx];
-      btn.disabled = true;
-      btn.textContent = 'Saving...';
-      await fetch('/api/playbooks', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...entry, tips, updatedAt: new Date().toISOString() }),
-      });
-      btn.textContent = 'Saved';
-      setTimeout(() => { btn.disabled = false; btn.textContent = 'Save tip'; }, 1200);
-    });
-  });
-}
-
-async function loadRuns() {
-  const runs = await fetch('/api/runs?limit=30').then((r) => r.json());
-  const el = $('#runs');
-  if (runs.length === 0) {
-    el.innerHTML = '<div class="empty">No runs yet.</div>';
-    return;
-  }
-  el.innerHTML = `
-    <div class="table-scroll">
-    <table>
-      <thead><tr>
-        <th>Agent</th><th>Task</th><th>Mode</th><th>Result</th><th>Time</th><th>LLM calls</th><th>When</th>
-      </tr></thead>
-      <tbody>
-        ${runs
-          .map(
-            (r) => `
-            <tr>
-              <td><b>${esc(r.agentName)}</b></td>
-              <td><div class="mono">${esc(r.domain)}</div><div class="muted">${esc(r.taskDescription)}</div></td>
-              <td><span class="badge ${r.mode}">${r.mode === 'script' ? 'replay' : r.mode}</span></td>
-              <td><span class="badge ${r.success ? 'ok' : 'fail'}">${r.success ? 'success' : 'failed'}</span></td>
-              <td>${(r.elapsedMs / 1000).toFixed(1)}s</td>
-              <td>${r.llmCalls}</td>
-              <td class="muted">
-                ${timeAgo(r.timestamp)}
-                ${r.sessionViewerUrl ? `· <a href="${esc(r.sessionViewerUrl)}" target="_blank" style="color:var(--accent)">session</a>` : ''}
-              </td>
-            </tr>`
-          )
-          .join('')}
-      </tbody>
-    </table>
-    </div>
-  `;
-}
-
+function renderAgents() { $('#agentStrip').innerHTML = state.agents.length ? state.agents.map(a => `<div class="agent"><span class="avatar" aria-hidden="true">${esc(String(a.name).slice(0,2).toUpperCase())}</span><div><div class="agent-name">${esc(a.name)}</div><div class="agent-meta">${esc(a.runCount)} runs · ${esc(timeAgo(a.lastSeen))}</div></div></div>`).join('') : '<p class="muted" style="font-size:12px">No contributors yet.</p>'; }
 async function refreshAll() {
-  await Promise.all([loadAgents(), loadPlaybooks(), loadRuns()]);
+  if (state.refreshing) return; state.refreshing = true;
+  const resources = ['/api/playbooks', '/api/runs?limit=30', '/api/agents'];
+  const results = await Promise.allSettled(resources.map(async url => { const data = await api(url); if (!Array.isArray(data)) throw new Error('Hub returned unexpected data.'); return data; }));
+  const failures = results.filter(r => r.status === 'rejected');
+  if (results[0].status === 'fulfilled') {
+    const data = results[0].value, fp = JSON.stringify(data);
+    // Keep note focus, unsaved edits and expanded scripts intact during polling.
+    if (!$('#playbooks').contains(document.activeElement) && !$('#playbooks button:disabled')) {
+      state.playbooks = data;
+      if (fp !== state.fingerprints.playbooks) { renderPlaybooks(); state.fingerprints.playbooks = fp; }
+      renderStats();
+    }
+  } else if (!state.loaded) $('#playbooks').innerHTML = '<div class="empty">Could not load memory. Retrying automatically…</div>';
+  if (results[1].status === 'fulfilled') renderRuns()(results[1].value);
+  else if (!state.loaded) $('#runs').innerHTML = '<div class="empty">Could not load activity. Retrying automatically…</div>';
+  if (results[2].status === 'fulfilled') { state.agents = results[2].value; renderAgents(); }
+  $('#connection').classList.toggle('error', failures.length > 0);
+  $('#connectionText').textContent = failures.length ? 'Hub unavailable · retrying' : 'Hub connected';
+  state.loaded = results.every(r => r.status === 'fulfilled'); state.refreshing = false;
 }
-
-$('#runForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const url = $('#runUrl').value.trim();
-  const task = $('#runTaskText').value.trim();
-  const btn = $('#runBtn');
-  btn.disabled = true;
-  btn.textContent = 'Running...';
-  $('#runStatus').textContent = 'Agent is working — this can take a few seconds to ~15s on a cold run.';
+$('#runForm').addEventListener('submit', async e => {
+  e.preventDefault(); if (state.running) return;
+  const url = safeUrl($('#runUrl').value.trim()), task = $('#runTaskText').value.trim();
+  if (!url || !task) { $('#runStatus').textContent = 'Enter an http(s) URL and a task description.'; return; }
+  state.running = true; state.runStarted = Date.now(); $('#runBtn').disabled = true; $('#meName').disabled = true; $('#runBtn').textContent = 'Running…'; $('#runStatus').className = '';
+  const showRunning = () => { $('#runStatus').innerHTML = `<div class="result-title"><span class="dot running-dot"></span><strong>AGENT RUNNING</strong></div><p class="muted">${esc(myAgentName)} is executing your task.</p><div class="result-meta"><span>${duration(Date.now() - state.runStarted)} elapsed</span><span>Waiting for browser result</span></div>`; };
+  showRunning(); const timer = setInterval(showRunning, 1000);
   try {
-    const res = await fetch('/api/tasks/run', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ url, task, agentName: myAgentName }),
-    });
-    const result = await res.json();
-    if (!res.ok) throw new Error(result.error || 'run failed');
-    $('#runStatus').innerHTML = `${result.success ? '✅' : '⚠️'} ${esc(result.summary)} — ${(result.elapsedMs / 1000).toFixed(1)}s, ${result.llmCalls} LLM calls (${esc(result.usedLibrary)}). <a href="${esc(result.sessionViewerUrl)}" target="_blank">view session</a>`;
-  } catch (err) {
-    $('#runStatus').textContent = 'Error: ' + err.message;
-  } finally {
-    btn.disabled = false;
-    btn.textContent = 'Run';
-    refreshAll();
-  }
+    const result = await api('/api/tasks/run', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({url, task, agentName:myAgentName})});
+    clearInterval(timer);
+    $('#runStatus').className = result.success ? 'result-success' : 'result-error';
+    const title = !result.success ? 'EXECUTION FAILED' : result.usedLibrary === 'script' ? 'MEMORY REPLAYED' : 'TASK COMPLETE';
+    $('#runStatus').innerHTML = `<div class="result-title"><strong>${title}</strong></div><p>${esc(result.summary)}</p><div class="result-meta"><span>${duration(result.elapsedMs)}</span><span>${esc(result.llmCalls ?? '—')} LLM calls</span><span>${result.usedLibrary === 'script' ? 'Memory replay' : result.usedLibrary === 'tips' ? 'Run with tips' : 'Cold run'}</span>${sessionLink(result.sessionViewerUrl)}</div>`;
+  } catch (err) { clearInterval(timer); $('#runStatus').className = 'result-error'; $('#runStatus').textContent = `Run failed: ${err.message}`; }
+  finally { clearInterval(timer); state.running = false; $('#runBtn').disabled = false; $('#meName').disabled = false; $('#runBtn').innerHTML = 'Run task <span aria-hidden="true">↗</span>'; refreshAll(); }
 });
-
-refreshAll();
-setInterval(refreshAll, 4000);
+refreshAll(); setInterval(() => { if (!document.hidden) refreshAll(); }, 4000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) refreshAll(); });
 </script>
 </body>
 </html>
