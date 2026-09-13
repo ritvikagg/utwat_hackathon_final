@@ -1,7 +1,7 @@
 import OpenAI from 'openai';
 import type { Page } from 'playwright';
 import { extractPageState, executeAction } from './tools.js';
-import type { ColdRunResult } from '../types.js';
+import type { ColdRunResult, TraceStep } from '../types.js';
 
 const client = new OpenAI({
   baseURL: process.env.LOCAL_LLM_BASE_URL || 'http://localhost:1234/v1',
@@ -9,7 +9,7 @@ const client = new OpenAI({
   apiKey: process.env.LOCAL_LLM_API_KEY || 'lm-studio',
 });
 const MODEL = process.env.LOCAL_LLM_MODEL || 'local-model';
-const MAX_STEPS = 15;
+const MAX_STEPS = 25;
 
 const tools: OpenAI.Chat.Completions.ChatCompletionTool[] = [
   {
@@ -80,7 +80,7 @@ export async function runColdAgentLocal(
 ): Promise<ColdRunResult> {
   let llmCalls = 0;
   let staleTurns = 0;
-  const typedValues: string[] = [];
+  const trace: TraceStep[] = [];
 
   const systemPrompt = [
     'You are a browser-automation agent. You are given a task and the current page state as a numbered list of interactive elements.',
@@ -117,11 +117,11 @@ export async function runColdAgentLocal(
     const message = response.choices[0].message;
     messages.push(message);
 
-    const call = message.tool_calls?.[0];
-    if (!call || call.type !== 'function') {
+    const calls = (message.tool_calls ?? []).filter((c) => c.type === 'function');
+    if (calls.length === 0) {
       staleTurns += 1;
       if (staleTurns > MAX_STALE_TURNS) {
-        return { success: false, summary: 'Model stopped calling tools.', llmCalls, typedValues };
+        return { success: false, summary: 'Model stopped calling tools.', llmCalls, trace };
       }
       messages.push({
         role: 'user',
@@ -131,26 +131,36 @@ export async function runColdAgentLocal(
     }
     staleTurns = 0;
 
-    let args: Record<string, unknown> = {};
-    try {
-      args = JSON.parse(call.function.arguments || '{}');
-    } catch {
-      // Leave args empty — executeAction reports the missing/invalid element.
+    // Some models issue more than one tool call per turn. The API requires a
+    // 'tool' message for EVERY tool_call_id or the next request is rejected
+    // — so every call in this batch gets answered, not just the first.
+    for (const call of calls) {
+      if (call.function.name === 'finish') {
+        let args: Record<string, unknown> = {};
+        try {
+          args = JSON.parse(call.function.arguments || '{}');
+        } catch {
+          // Treat as failure below via Boolean(undefined) => false.
+        }
+        const { success, summary } = args as { success?: boolean; summary?: string };
+        return { success: Boolean(success), summary: summary ?? '', llmCalls, trace };
+      }
     }
 
-    if (call.function.name === 'finish') {
-      const { success, summary } = args as { success?: boolean; summary?: string };
-      return { success: Boolean(success), summary: summary ?? '', llmCalls, typedValues };
+    for (const call of calls) {
+      let args: Record<string, unknown> = {};
+      try {
+        args = JSON.parse(call.function.arguments || '{}');
+      } catch {
+        // Leave args empty — executeAction reports the missing/invalid element.
+      }
+      const result = await executeAction(page, elements, call.function.name, args, trace);
+      console.log(`  -> ${call.function.name}(${JSON.stringify(args)}) => ${result}`);
+      messages.push({ role: 'tool', tool_call_id: call.id, content: result });
     }
-
-    const result = await executeAction(page, elements, call.function.name, args, typedValues);
     const newState = await describeState();
-    messages.push({
-      role: 'tool',
-      tool_call_id: call.id,
-      content: `${result}\n\n${newState}`,
-    });
+    messages.push({ role: 'user', content: newState });
   }
 
-  return { success: false, summary: 'Hit max step limit.', llmCalls, typedValues };
+  return { success: false, summary: 'Hit max step limit.', llmCalls, trace };
 }

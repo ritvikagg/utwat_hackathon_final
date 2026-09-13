@@ -1,6 +1,15 @@
 import { spawnSync } from 'node:child_process';
 import type { TraceStep } from '../types.js';
 
+// NOT part of the live compile pipeline — see tools.ts's executeAction for
+// why: Steel's trace redacts typed values to a length only, uses
+// undocumented event-type naming, and on some SPA sites fires extra phantom
+// change events that break any attempt to align values by position. Our own
+// action log (built in tools.ts, used by runTask.ts) is the actual source
+// of truth for compiled scripts now. This module is kept because it's
+// genuinely useful for manual debugging — e.g. `steel --json sessions
+// traces <id>` was how the above problems were actually diagnosed.
+//
 // Schema confirmed against a live `steel --json sessions traces <id>` call —
 // see steel-dev/skills' steel-skill-creator reference docs for the general
 // shape; field names here are from an actual response, not just the docs.

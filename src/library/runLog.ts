@@ -21,7 +21,7 @@ export function recordRun(entry: RunLogEntry): void {
   writeAll(entries.slice(-MAX_ENTRIES));
 }
 
-export function recentRuns(limit = 50): RunLogEntry[] {
-  const entries = readAll();
+export function recentRuns(groupId: string, limit = 50): RunLogEntry[] {
+  const entries = readAll().filter((e) => e.groupId === groupId);
   return entries.slice(-limit).reverse();
 }

@@ -1,11 +1,11 @@
 import Anthropic from '@anthropic-ai/sdk';
 import type { Page } from 'playwright';
 import { extractPageState, executeAction } from './tools.js';
-import type { ColdRunResult } from '../types.js';
+import type { ColdRunResult, TraceStep } from '../types.js';
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 const MODEL = process.env.ANTHROPIC_MODEL || 'claude-sonnet-5';
-const MAX_STEPS = 15;
+const MAX_STEPS = 25;
 
 const tools: Anthropic.Tool[] = [
   {
@@ -62,7 +62,7 @@ export async function runColdAgent(
 ): Promise<ColdRunResult> {
   let llmCalls = 0;
   let staleTurns = 0;
-  const typedValues: string[] = [];
+  const trace: TraceStep[] = [];
 
   const systemPrompt = [
     'You are a browser-automation agent. You are given a task and the current page state as a numbered list of interactive elements.',
@@ -95,13 +95,13 @@ export async function runColdAgent(
     llmCalls += 1;
     messages.push({ role: 'assistant', content: response.content });
 
-    const toolUse = response.content.find(
+    const toolUses = response.content.filter(
       (b): b is Anthropic.ToolUseBlock => b.type === 'tool_use'
     );
-    if (!toolUse) {
+    if (toolUses.length === 0) {
       staleTurns += 1;
       if (staleTurns > MAX_STALE_TURNS) {
-        return { success: false, summary: 'Model stopped calling tools.', llmCalls, typedValues };
+        return { success: false, summary: 'Model stopped calling tools.', llmCalls, trace };
       }
       messages.push({
         role: 'user',
@@ -111,27 +111,34 @@ export async function runColdAgent(
     }
     staleTurns = 0;
 
-    if (toolUse.name === 'finish') {
-      const input = toolUse.input as { success: boolean; summary: string };
-      return { success: input.success, summary: input.summary, llmCalls, typedValues };
+    // Claude sometimes issues more than one tool call per turn despite the
+    // "one tool per turn" instruction. The API requires a tool_result for
+    // EVERY tool_use in the message or the next request is rejected — so
+    // every call in this batch gets answered, not just the first.
+    const finishCall = toolUses.find((t) => t.name === 'finish');
+    if (finishCall) {
+      const input = finishCall.input as { success: boolean; summary: string };
+      return { success: input.success, summary: input.summary, llmCalls, trace };
     }
 
-    const result = await executeAction(
-      page,
-      elements,
-      toolUse.name,
-      toolUse.input as Record<string, unknown>,
-      typedValues
-    );
+    const resultBlocks: Anthropic.ToolResultBlockParam[] = [];
+    for (const toolUse of toolUses) {
+      const result = await executeAction(
+        page,
+        elements,
+        toolUse.name,
+        toolUse.input as Record<string, unknown>,
+        trace
+      );
+      console.log(`  -> ${toolUse.name}(${JSON.stringify(toolUse.input)}) => ${result}`);
+      resultBlocks.push({ type: 'tool_result', tool_use_id: toolUse.id, content: result });
+    }
     const newState = await describeState();
     messages.push({
       role: 'user',
-      content: [
-        { type: 'tool_result', tool_use_id: toolUse.id, content: result },
-        { type: 'text', text: newState },
-      ],
+      content: [...resultBlocks, { type: 'text', text: newState }],
     });
   }
 
-  return { success: false, summary: 'Hit max step limit.', llmCalls, typedValues };
+  return { success: false, summary: 'Hit max step limit.', llmCalls, trace };
 }

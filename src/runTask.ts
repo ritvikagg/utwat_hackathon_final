@@ -2,8 +2,8 @@ import os from 'node:os';
 import crypto from 'node:crypto';
 import Steel from 'steel-sdk';
 import { chromium } from 'playwright';
-import { getPlaybook, recordRun, usingHub, compileViaHub } from './library/repo.js';
-import { compileSession } from './library/compile.js';
+import { getPlaybook, upsertPlaybook, recordRun, localGroupId, setTaskRunning } from './library/repo.js';
+import { distill } from './library/distill.js';
 import { runColdAgent } from './agent/loop.js';
 import { runColdAgentLocal } from './agent/loop.local.js';
 import { replayScript } from './agent/replay.js';
@@ -27,15 +27,31 @@ export interface RunTaskResult {
   trace: TraceStep[];
 }
 
+export interface RunTaskOptions {
+  params?: Record<string, string>;
+  /** Only meaningful for a run happening in-process on the hub itself (the
+   *  dashboard's "run a task" button) — the hub's own repo.ts calls always
+   *  resolve to the local "default" group otherwise, since the hub doesn't
+   *  set HIVEMIND_HUB_URL on itself. Lets that one call site use the
+   *  authenticated dashboard user's actual current group instead. */
+  groupId?: string;
+  agentName?: string;
+}
+
 export async function runTask(
   startUrl: string,
   taskDescription: string,
-  params: Record<string, string> = {}
+  options: RunTaskOptions = {}
 ): Promise<RunTaskResult> {
+  const params = options.params ?? {};
   const domain = new URL(startUrl).hostname;
   const taskSignature = slug(taskDescription);
-  const existing = await getPlaybook(domain, taskSignature);
-  const agentName = process.env.HIVEMIND_AGENT_NAME || os.userInfo().username || 'anonymous';
+  const existing = await getPlaybook(domain, taskSignature, options.groupId);
+  const agentName =
+    options.agentName || process.env.HIVEMIND_AGENT_NAME || os.userInfo().username || 'anonymous';
+  const groupId = options.groupId ?? localGroupId();
+
+  await setTaskRunning(true);
 
   const client = new Steel({ steelAPIKey: process.env.STEEL_API_KEY });
   const session = await client.sessions.create();
@@ -88,23 +104,19 @@ export async function runTask(
       success = result.success;
       summary = result.summary;
       llmCalls = result.llmCalls;
+      trace = result.trace;
 
-      if (success) {
-        try {
-          const updated = usingHub()
-            ? await compileViaHub(session.id, domain, taskSignature, result.typedValues)
-            : compileSession(session.id, domain, taskSignature, result.typedValues);
-          if (updated) {
-            trace = updated.lastTrace ?? [];
-            console.log(`Library updated: status=${updated.status}, successCount=${updated.successCount}`);
-          }
-        } catch (err) {
-          console.warn(`Could not update shared library: ${(err as Error).message}`);
-        }
+      // Our own action log is the source of truth here — see tools.ts for
+      // why Steel's session trace was tried and dropped for this.
+      if (success && trace.length > 0) {
+        const updated = distill(existing, groupId, domain, taskSignature, trace);
+        await upsertPlaybook(updated);
+        console.log(`Library updated: status=${updated.status}, successCount=${updated.successCount}`);
       }
     }
   } finally {
     await client.sessions.release(session.id);
+    await setTaskRunning(false);
   }
 
   const elapsedMs = Date.now() - startedAt;
@@ -112,6 +124,7 @@ export async function runTask(
 
   await recordRun({
     id: crypto.randomUUID(),
+    groupId,
     agentName,
     domain,
     taskSignature,

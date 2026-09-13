@@ -85,18 +85,18 @@ flowchart TB
 - Either an [Anthropic API key](https://console.anthropic.com) **or** [LM Studio](https://lmstudio.ai) running locally with a tool-calling-capable model loaded
 
 ### 1. Install
- 
+
 ```bash
 npm install
 ```
 
-### 2. Configure 
+### 2. Configure
 
 ```bash
 cp .env.example .env
 ```
 
-Fill in `STEEL_API_KEY` and either `ANTHROPIC_API_KEY` (with `LLM_PROVIDER=anthropic`) or `LOCAL_LLM_BASE_URL`/`LOCAL_LLM_MODEL` (with `LLM_PROVIDER=local`)
+Fill in `STEEL_API_KEY` and either `ANTHROPIC_API_KEY` (with `LLM_PROVIDER=anthropic`) or `LOCAL_LLM_BASE_URL`/`LOCAL_LLM_MODEL` (with `LLM_PROVIDER=local`).
 
 ### 3. Smoke-test your setup
 

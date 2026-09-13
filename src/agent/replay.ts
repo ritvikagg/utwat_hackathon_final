@@ -1,5 +1,6 @@
 import type { Page } from 'playwright';
 import type { ScriptStep } from '../types.js';
+import { nativeClick } from './tools.js';
 
 const PARAM_PATTERN = /^\{\{(\w+)\}\}$/;
 
@@ -25,7 +26,9 @@ export async function replayScript(
       continue;
     }
     const locator = page.locator(step.selector).first();
-    if (step.action === 'click') await locator.click({ timeout: 5000 });
+    if (step.action === 'click') {
+      await nativeClick(locator);
+    }
     if (step.action === 'type') {
       await locator.fill(resolveValue(step.value, params), { timeout: 5000 });
     }

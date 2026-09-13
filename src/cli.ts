@@ -9,6 +9,11 @@ if (!url || !task) {
   process.exit(1);
 }
 
-runTask(url, task).then((r) => {
-  console.log(JSON.stringify(r, null, 2));
-});
+runTask(url, task)
+  .then((r) => {
+    console.log(JSON.stringify(r, null, 2));
+  })
+  .catch((err) => {
+    console.error('Task run failed:', err.message);
+    process.exit(1);
+  });

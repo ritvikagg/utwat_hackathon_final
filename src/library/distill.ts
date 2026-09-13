@@ -30,11 +30,13 @@ function diffToScript(prev: TraceStep[], curr: TraceStep[]): ScriptStep[] | null
 
 export function distill(
   existing: PlaybookEntry | undefined,
+  groupId: string,
   domain: string,
   taskSignature: string,
   trace: TraceStep[]
 ): PlaybookEntry {
   const base: PlaybookEntry = existing ?? {
+    groupId,
     domain,
     taskSignature,
     tips: '',
